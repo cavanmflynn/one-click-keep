@@ -1,0 +1,7 @@
+@include page('home') {
+  height: 100%;
+
+  &__content {
+    height: 50%;
+  }
+}

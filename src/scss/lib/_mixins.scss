@@ -1,0 +1,44 @@
+/// Creates a namespaced selector using the configured `namespace-tag` string.
+/// For example:
+/// ```
+///   @include namespace("hello", "world") {
+///     background-color: red;
+///   }
+/// ```
+/// would produce a selector like: `.hello/world` (under the default
+/// configuration).
+@mixin namespace($namespace, $identifier) {
+  $namepace-tag: '/';
+  $selector: '.#{$namespace}\\#{$namepace-tag}#{$identifier}';
+
+  #{$selector} {
+    @content;
+  }
+}
+
+/// Namespace shortcut for pages.
+/// @param $identifier A string to identify the component name
+@mixin page($identifier) {
+  @include namespace('page', $identifier) {
+    @content;
+  }
+}
+
+/// Namespace shortcut for partials.
+/// @param $identifier A string to identify the component name
+@mixin partial($identifier) {
+  @include namespace('partial', $identifier) {
+    @content;
+  }
+}
+
+// Centering for absolutely positioned elements.
+@mixin center($x: 50%, $y: 50%, $fixed: false) {
+  position: if($fixed, fixed, absolute);
+  top: $y;
+  left: $x;
+
+  $x-transform: if(unit($x) == '%', -$x, 0);
+  $y-transform: if(unit($y) == '%', -$y, 0);
+  transform: translate(#{$x-transform}, #{$y-transform});
+}

@@ -1,0 +1,49 @@
+// NOTE: Paths in this file are absolutely relative to the `public` directory.
+
+// ***** DIN Mono *****
+
+// Import required for license compliance.
+@import url('//hello.myfonts.net/count/37e9fb');
+
+@font-face {
+  font-family: 'PFDINMono-Regular';
+  font-display: swap;
+  src: url('/assets/fonts/din-mono/37E9FB_0_0.eot');
+  src: url('/assets/fonts/din-mono/37E9FB_0_0.eot?#iefix')
+      format('embedded-opentype'),
+    url('/assets/fonts/din-mono/37E9FB_0_0.woff2') format('woff2'),
+    url('/assets/fonts/din-mono/37E9FB_0_0.woff') format('woff'),
+    url('/assets/fonts/din-mono/37E9FB_0_0.ttf') format('truetype');
+}
+
+// ***** DIN Next *****
+
+// Regular
+@font-face {
+  font-family: 'DINNextW01';
+  font-display: swap;
+  src: url('/assets/fonts/din-next/din-next-regular-latin.woff') format('woff'),
+    url('/assets/fonts/din-next/din-next-regular-latin.ttf') format('truetype');
+  font-weight: 300;
+}
+
+// Condensed bold
+@font-face {
+  font-family: 'DINNextW01';
+  font-display: swap;
+  src: url('/assets/fonts/din-next/din-next-condensed-bold-latin.woff')
+      format('woff'),
+    url('/assets/fonts/din-next/din-next-condensed-bold-latin.ttf')
+      format('truetype');
+  font-stretch: condensed;
+  font-weight: bold;
+}
+
+// Light
+@font-face {
+  font-family: 'DINNextW01';
+  font-display: swap;
+  src: url('/assets/fonts/din-next/din-next-light-latin.ttf') format('woff'),
+    url('/assets/fonts/din-next/din-next-light-latin.ttf') format('truetype');
+  font-weight: 100;
+}
