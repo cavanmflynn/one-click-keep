@@ -1,6 +1,28 @@
 {
-  "HOME": "Home",
-  "ABOUT": "About",
-  "WELCOME_TO_ONE_CLICK_KEEP": "Welcome to one-click keep",
-  "ROUTING_EXAMPLE": "This page is used as a routing example"
+  "DOCKER": "Docker",
+  "DOCKER_NOT_DETECTED": "Docker Not Detected",
+  "DOCKER_ERROR": "Docker Error",
+  "COMPOSE": "Compose",
+  "CHECK_AGAIN": "Check Again",
+  "DOWNLOAD": "Download",
+  "NOT_FOUND": "Not Found",
+
+  "LETS_GET_STARTED": "Let's get started!",
+  "CREATE_A_KEEP_NETWORK": "Create a KEEP Network",
+
+  "NETWORK_NAME": "Network Name",
+  "NETWORK_NAME_REQUIRED": "A network name is required",
+  "HOW_MANY_NODES": "How many nodes?",
+  "RANDOM_BEACON": "Random Beacon",
+  "RANDOM_BEACON_NODE_REQUIRED": "At least one random beacon node is required",
+  "ECDSA_SIGNING": "Signing (ECDSA)",
+  "ECDSA_SIGNING_NODE_REQUIRED": "At least one signing (ECDSA) node is required",
+  "CREATE_NETWORK": "Create Network",
+  "NETWORK_NOT_FOUND": {
+    "template": "Network with the id %networkId was not found.",
+    "required": {
+      "networkId": null
+    }
+  },
+  "BITCOIND_MINE_ERROR": "The number of blocks to mine must be a positive number"
 }

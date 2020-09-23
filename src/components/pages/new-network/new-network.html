@@ -1,0 +1,55 @@
+<div class="page/new-network">
+  <a-page-header
+    title="Create a KEEP Network"
+    @back="() => $router.push('/')"
+  />
+  <a-form :form="form" :colon="false" @submit="createNetwork">
+    <a-form-item :label="'NETWORK_NAME' | translate">
+      <a-input
+        placeholder="My KEEP Network"
+        v-decorator="[
+          'name',
+          {
+            rules: [{ required: true, message: $lang.translate('NETWORK_NAME_REQUIRED') }],
+          },
+        ]"
+      />
+    </a-form-item>
+    <a-divider orientation="left">{{ 'HOW_MANY_NODES' | translate }}</a-divider>
+    <a-row>
+      <a-col :span="6">
+        <a-form-item :label="'RANDOM_BEACON' | translate">
+          <a-input-number
+            :min="1"
+            :max="10"
+            v-decorator="[
+              'randomBeaconNodeCount',
+              {
+                rules: [{ type: 'number', required: true, message: $lang.translate('RANDOM_BEACON_NODE_REQUIRED') }],
+                initialValue: 1,
+              },
+            ]"
+          />
+        </a-form-item>
+      </a-col>
+      <a-col :span="6">
+        <a-form-item :label="'ECDSA_SIGNING' | translate">
+          <a-input-number
+            :min="3"
+            :max="20"
+            v-decorator="[
+            'ecdsaNodeCount',
+            {
+              rules: [{ type: 'number', required: true, message: $lang.translate('ECDSA_SIGNING_NODE_REQUIRED') }],
+              initialValue: 3,
+            },
+          ]"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
+    <a-button type="primary" html-type="submit" :loading="loading">
+      {{ 'CREATE_NETWORK' | translate }}
+    </a-button>
+  </a-form>
+</div>

@@ -1,0 +1,5 @@
+@include partial('footer') {
+  > span {
+    margin-right: 10px;
+  }
+}

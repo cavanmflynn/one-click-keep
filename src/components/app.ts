@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import '../scss/main.scss';
 import WithRender from './app.html';
 import { PageSkeleton } from './layout/page-skeleton';
+import { system } from '@/store';
 
 @WithRender
 @Component({
@@ -9,4 +10,8 @@ import { PageSkeleton } from './layout/page-skeleton';
     PageSkeleton,
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  async created() {
+    await system.initialize();
+  }
+}

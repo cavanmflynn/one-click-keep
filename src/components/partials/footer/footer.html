@@ -1,0 +1,11 @@
+<a-layout-footer
+  class="partial/footer"
+  :style="{ padding: '10px 16px', fontSize: '12px', color: '#999999' }"
+>
+  <span v-show="dockerVersion"
+    >{{ 'DOCKER' | translate }} {{ dockerVersion }}</span
+  >
+  <span v-show="composeVersion"
+    >{{ 'COMPOSE' | translate }} {{ composeVersion }}</span
+  >
+</a-layout-footer>

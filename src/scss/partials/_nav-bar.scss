@@ -1,0 +1,5 @@
+@include partial('nav-bar') {
+  &__logo {
+    height: 32px;
+  }
+}

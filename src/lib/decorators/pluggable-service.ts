@@ -7,10 +7,10 @@ import Vue, { PluginFunction } from 'vue';
  * @param pluginName The name of the plugin (accessible on the `Vue` prototype
  * at `Vue.$pluginName`)
  */
-export function PluggableService(
+export const PluggableService = (
   pluginName: string,
   reactive = false,
-): ClassDecorator {
+): ClassDecorator => {
   return (target) => {
     const install: PluginFunction<void> = (VueInst) => {
       // Define getter as global property or instance property.
@@ -35,4 +35,4 @@ export function PluggableService(
 
     Vue.use(install);
   };
-}
+};

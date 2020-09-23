@@ -1,0 +1,25 @@
+<a-modal :visible="!docker || !compose" class="partial/detect-docker-modal">
+  <a-result status="warning" :title="'DOCKER_NOT_DETECTED' | translate">
+    <template #extra>
+      <div>
+        <a-button
+          v-for="[text, url] in Object.entries(dockerLinks[platform])"
+          :key="text"
+          :icon="buttonIcons[platform]"
+          type="primary"
+          size="large"
+          @click="() => openInBrowser(url)"
+        >
+          {{ 'DOWNLOAD' | translate }} {{ text }}
+        </a-button>
+      </div>
+    </template>
+  </a-result>
+  <a-table :columns="detailColumns" :data-source="details" :pagination="false">
+  </a-table>
+  <template slot="footer">
+    <a-button type="link" @click="checkDockerVersions">
+      {{ 'CHECK_AGAIN' | translate }}
+    </a-button>
+  </template>
+</a-modal>

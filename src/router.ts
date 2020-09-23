@@ -14,13 +14,20 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
+      path: '/network',
+      name: 'new-network',
       component: () =>
-        import(/* webpackChunkName: "about" */ './components/pages/about'),
+        import(
+          /* webpackChunkName: "new-network" */ './components/pages/new-network'
+        ),
+    },
+    {
+      path: '/network/:id',
+      name: 'network-view',
+      component: () =>
+        import(
+          /* webpackChunkName: "network-view" */ './components/pages/network-view'
+        ),
     },
   ],
 });

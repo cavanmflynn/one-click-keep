@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
-import WithRender from './about.html';
+import WithRender from './nav-bar.html';
 
 @WithRender
 @Component
-export default class About extends Vue {}
+export class NavBar extends Vue {}

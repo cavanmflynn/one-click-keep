@@ -1,5 +1,5 @@
 import { LanguageService } from '@/services';
-import { Substitutions, TranslationKey } from '@/types';
+import { TranslationKey } from '@/types';
 import Container from 'typedi';
 import Vue from 'vue';
 
@@ -10,12 +10,12 @@ Vue.filter(
   'translate',
   <TKey extends TranslationKey>(
     translationKey: TKey,
-    substitutions: Substitutions<TKey> = {} as Substitutions<TKey>,
+    substitutions: unknown,
   ) => {
     if (!translationKey) return '';
     return Container.get(LanguageService).translate(
       translationKey,
-      ...substitutions,
+      substitutions,
     );
   },
 );

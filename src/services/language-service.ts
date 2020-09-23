@@ -1,7 +1,7 @@
 import { PluggableService } from '@/lib';
 import { languageLibrary } from '@/localization';
 import { system } from '@/store';
-import { Substitutions, TranslationKey } from '@/types';
+import { TranslationKey } from '@/types';
 import { Service } from 'typedi';
 
 declare module 'vue/types/vue' {
@@ -23,18 +23,18 @@ export class LanguageService {
    */
   public translate<TKey extends TranslationKey>(
     translationKey?: TKey,
-    ...substitutions: Substitutions<Exclude<TKey, ''>>
+    substitutions?: unknown,
   ) {
     if (!translationKey) return '';
-    const subs = substitutions[0] || {};
+    const subs = substitutions || {};
 
     // If the translation key is not defined, return it as the display text.
     if (!languageLibrary[system.language || 'en'].keys[translationKey]) {
       return translationKey;
     }
 
-    return languageLibrary[system.language || 'en']
-      .get(translationKey)
-      .toString(subs);
+    return (languageLibrary[system.language || 'en'].get(
+      translationKey,
+    ) as any).toString(subs);
   }
 }
