@@ -8,11 +8,7 @@ _Warning: These images are not hardened and shouldn't be used to store real cryp
 
 ### Tags
 
-- `0.20.1` ([bitcoind/Dockerfile](https://github.com/jamaljsr/polar/blob/master/docker/bitcoind/Dockerfile))
-- `0.20.0` ([bitcoind/Dockerfile](https://github.com/jamaljsr/polar/blob/master/docker/bitcoind/Dockerfile))
-- `0.19.1` ([bitcoind/Dockerfile](https://github.com/jamaljsr/polar/blob/master/docker/bitcoind/Dockerfile))
-- `0.19.0.1` ([bitcoind/Dockerfile](https://github.com/jamaljsr/polar/blob/master/docker/bitcoind/Dockerfile))
-- `0.18.1` ([bitcoind/Dockerfile](https://github.com/jamaljsr/polar/blob/master/docker/bitcoind/Dockerfile))
+- `0.20.1` ([bitcoind/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/bitcoind/Dockerfile))
 
 **Building the image**
 
@@ -21,12 +17,31 @@ $ cd bitcoind
 $ docker build --build-arg BITCOIN_VERSION=<version> -t oneclickkeep/bitcoind:<version> .
 ```
 
-Replace `<version>` with the desired bitcoind version (ex: `0.18.1`)
+Replace `<version>` with the desired bitcoind version (ex: `0.20.1`)
+
+## Ganache (Ethereum)
+
+### Tags
+
+- `6.10.2` ([ganache/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/ganache/Dockerfile))
+
+**Building the image**
+
+```sh
+$ cd ganache
+$ docker build --build-arg GANACHE_VERSION=<version> -t oneclickkeep/ganache:<version> .
+```
+
+Replace `<version>` with the desired ganache-cli version (ex: `6.10.2`)
 
 **Push to Docker Hub**
 
 ```sh
 $ docker push oneclickkeep/bitcoind:<version>
+```
+
+```sh
+$ docker push oneclickkeep/ganache:<version>
 ```
 
 # Out-of-Band Image Updates

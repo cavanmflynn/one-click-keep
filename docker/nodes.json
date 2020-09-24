@@ -3,11 +3,15 @@
   "images": {
     "bitcoind": {
       "latest": "0.20.1",
-      "versions": ["0.20.1", "0.20.0", "0.19.1", "0.19.0.1", "0.18.1"]
+      "versions": ["0.20.1"]
     },
     "btcd": {
       "latest": "",
       "versions": []
+    },
+    "ganache": {
+      "latest": "6.10.2",
+      "versions": ["6.10.2"]
     }
   }
 }

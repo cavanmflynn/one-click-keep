@@ -20,11 +20,11 @@ export const COINBASE_MATURITY_DELAY = 100;
 export const HALVING_INTERVAL = 150; // https://github.com/bitcoin/bitcoin/blob/v0.19.0.1/src/chainparams.cpp#L258
 
 // Docker
-export const DOCKER_REPO = 'polarlightning'; // TODO: Update
+export const DOCKER_REPO = 'oneclickkeep';
 export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   bitcoind: {
     name: 'Bitcoin Core',
-    imageName: 'polarlightning/bitcoind',
+    imageName: 'oneclickkeep/bitcoind',
     logo: bitcoindLogo,
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'bitcoind',
