@@ -12,6 +12,7 @@ import {
   DockerVersions,
   Network,
   NetworksFile,
+  EthereumNode,
 } from '@/types';
 import stripAnsi from 'strip-ansi';
 import { APP_VERSION } from '../constants';
@@ -80,9 +81,10 @@ class DockerService {
    */
   async saveComposeFile(network: Network) {
     const file = new ComposeFile();
-    const { bitcoin } = network.nodes;
+    const { bitcoin, ethereum } = network.nodes;
 
     bitcoin.forEach((node) => file.addBitcoind(node));
+    ethereum.forEach((node) => file.addGanache(node));
     // lightning.forEach(node => {
     //   if (node.implementation === 'LND') {
     //     const lnd = node as LndNode;
@@ -104,7 +106,7 @@ class DockerService {
     const yml = yaml.dump(file.content);
     const path = join(network.path, 'docker-compose.yml');
     await write(path, yml);
-    info(`saved compose file for '${network.name}' at '${path}'`);
+    info(`Saved compose file for '${network.name}' at '${path}'`);
   }
 
   /**
@@ -112,8 +114,8 @@ class DockerService {
    * @param network the network to start
    */
   async start(network: Network) {
-    const { bitcoin /*lightning*/ } = network.nodes;
-    await this.ensureDirs(network, [...bitcoin /*...lightning*/]);
+    const { bitcoin, ethereum } = network.nodes;
+    await this.ensureDirs(network, [...bitcoin, ...ethereum]);
 
     info(`Starting docker containers for ${network.name}`);
     info(` - path: ${network.path}`);
@@ -134,12 +136,12 @@ class DockerService {
 
   /**
    * Starts a single service using docker-compose
-   * @param network the network containing the node
-   * @param node the node to start
+   * @param network The network containing the node
+   * @param node The node to start
    */
   async startNode(network: Network, node: CommonNode) {
     await this.ensureDirs(network, [node]);
-    // make sure the docker container is stopped. If it is already started in an error state
+    // Make sure the docker container is stopped. If it is already started in an error state
     // then starting it would have no effect
     await this.stopNode(network, node);
 
@@ -155,8 +157,8 @@ class DockerService {
 
   /**
    * Stops a single service using docker-compose
-   * @param network the network containing the node
-   * @param node the node to stop
+   * @param network The network containing the node
+   * @param node The node to stop
    */
   async stopNode(network: Network, node: CommonNode) {
     info(`Stopping docker container for ${node.name}`);
@@ -185,7 +187,7 @@ class DockerService {
     info(`Container stopped:\n ${result.out || result.err}`);
 
     info(`Removing stopped docker containers`);
-    // the `any` cast is used because `rm` is the only method on compose that takes the
+    // The `any` cast is used because `rm` is the only method on compose that takes the
     // IDockerComposeOptions as the first param and a spread for the remaining
     result = await this.execute(compose.rm as any, this.getArgs(network));
     info(`Removed:\n ${result.out || result.err}`);
@@ -266,13 +268,13 @@ class DockerService {
   }
 
   private async ensureDirs(network: Network, nodes: CommonNode[]) {
-    // create the directory so the owner is the current host user
+    // Create the directory so the owner is the current host user
     // if this isn't done, then docker will create the folders
     // owned by root and linux containers won't start up due to
     // permission errors
     for (const commonNode of nodes) {
       // need to cast so typescript doesn't complain about 'implementation'
-      const node = commonNode as BitcoinNode;
+      const node = commonNode as BitcoinNode | EthereumNode;
       const nodeDir = nodePath(network, node.implementation, node.name);
       await ensureDir(nodeDir);
     }

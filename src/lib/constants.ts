@@ -1,6 +1,7 @@
 import { DockerConfig, NodeImplementation, DockerRepoState } from '@/types';
 import packageJson from '../../package.json';
 import bitcoindLogo from '@/images/ui-icons/bitcoind-logo.svg';
+import ganacheLogo from '@/images/ui-icons/ganache-logo.svg';
 
 // App
 export const APP_VERSION = packageJson.version;
@@ -46,7 +47,7 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
       '-listenonion=0',
       '-fallbackfee=0.0002',
     ].join('\n  '),
-    // if vars are modified, also update compose-file.ts & the i18n strings for cmps.nodes.CommandVariables
+    // If vars are modified, also update compose-file.ts & the i18n strings for cmps.nodes.CommandVariables
     variables: ['rpcUser', 'rpcAuth'],
   },
   btcd: {
@@ -58,10 +59,19 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
     command: '',
     variables: [],
   },
+  ganache: {
+    name: 'ganache',
+    imageName: 'oneclickkeep/ganache',
+    logo: ganacheLogo,
+    platforms: ['mac', 'linux', 'windows'],
+    volumeDirName: 'ganache',
+    command: '',
+    variables: [],
+  },
 };
 
 /**
- * this defines the hard-coded list of docker images available in the Polar app. When new images
+ * This defines the hard-coded list of docker images available in the Polar app. When new images
  * are pushed to Docker Hub, this list should be updated along with the /docker/nodes.json file.
  */
 export const DEFAULT_REPO_STATE: DockerRepoState = {
@@ -69,11 +79,15 @@ export const DEFAULT_REPO_STATE: DockerRepoState = {
   images: {
     bitcoind: {
       latest: '0.20.1',
-      versions: ['0.20.1', '0.20.0', '0.19.1', '0.19.0.1', '0.18.1'],
+      versions: ['0.20.1'],
     },
     btcd: {
       latest: '',
       versions: [],
+    },
+    ganache: {
+      latest: '6.10.2',
+      versions: ['6.10.2'],
     },
   },
 };
@@ -91,4 +105,7 @@ export const BASE_PORTS: Record<NodeImplementation, Record<string, number>> = {
     zmqTx: 29335,
   },
   btcd: {},
+  ganache: {
+    rpc: 8545,
+  },
 };

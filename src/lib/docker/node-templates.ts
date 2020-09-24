@@ -1,7 +1,7 @@
 import { DOCKER_CONFIGS } from '../constants';
 import { ComposeService } from './compose-file';
 
-// simple function to remove all line-breaks and extra white-space inside of a string
+// Simple function to remove all line-breaks and extra white-space inside of a string
 const trimInside = (text: string): string => text.replace(/\s+/g, ' ').trim();
 
 export const bitcoind = (
@@ -34,5 +34,27 @@ export const bitcoind = (
     `${rpcPort}:18443`, // RPC
     `${zmqBlockPort}:28334`, // ZMQ blocks
     `${zmqTxPort}:28335`, // ZMQ txns
+  ],
+});
+
+export const ganache = (
+  name: string,
+  container: string,
+  image: string,
+  rpcPort: number,
+): ComposeService => ({
+  image,
+  container_name: container,
+  environment: {},
+  hostname: name,
+  command: '',
+  volumes: [
+    `./volumes/${DOCKER_CONFIGS.ganache.volumeDirName}/${name}:/home/ethereum/.ethereum`,
+  ],
+  expose: [
+    '8545', // RPC
+  ],
+  ports: [
+    `${rpcPort}:8545`, // RPC
   ],
 });

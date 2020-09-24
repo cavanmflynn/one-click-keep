@@ -1,0 +1,15 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg" style="vector-effect: non-scaling-stroke;" stroke="null" preserveAspectRatio="xMidYMid">
+ <g stroke="null">
+  <rect stroke="null" fill="none" id="canvas_background" height="66" width="66" y="-1" x="-1"/>
+ </g>
+ <g stroke="null">
+  <g stroke="null" id="svg_7">
+   <path stroke="null" id="svg_1" d="m32.14991,0.41621l-0.42557,1.44647l0,41.97314l0.42557,0.4248l19.48346,-11.51662l-19.48346,-32.32779z" fill="#343434"/>
+   <path stroke="null" id="svg_2" d="m32.15006,0.26396l-19.48346,32.32779l19.48346,11.51677l0,-20.37251l0,-23.47206z" fill="#8C8C8C"/>
+   <path stroke="null" id="svg_3" d="m32.14991,47.79747l-0.23981,0.29234l0,14.95175l0.23981,0.70039l19.49519,-27.45532l-19.49519,11.51084z" fill="#3C3C3B"/>
+   <path stroke="null" id="svg_4" d="m32.15006,63.7418l0,-15.94464l-19.48346,-11.51084l19.48346,27.45548z" fill="#8C8C8C"/>
+   <path stroke="null" id="svg_5" d="m32.14991,44.10837l19.48316,-11.51647l-19.48316,-8.85573l0,20.3722z" fill="#141414"/>
+   <path stroke="null" id="svg_6" d="m12.6666,32.59174l19.48316,11.51662l0,-20.37235l-19.48316,8.85573z" fill="#393939"/>
+  </g>
+ </g>
+</svg>

@@ -1,7 +1,7 @@
-import { BitcoinNode } from '@/types';
+import { BitcoinNode, EthereumNode } from '@/types';
 import { BITCOIN_CREDENTIALS, DOCKER_CONFIGS } from '../constants';
 import { getContainerName } from './docker-utils';
-import { bitcoind } from './node-templates';
+import { bitcoind, ganache } from './node-templates';
 
 export interface ComposeService {
   image: string;
@@ -36,19 +36,19 @@ export class ComposeFile {
     const { name, version, ports } = node;
     const { rpc, zmqBlock, zmqTx } = ports;
     const container = getContainerName(node);
-    // define the variable substitutions
+    // Define the variable substitutions
     const variables = {
       rpcUser: BITCOIN_CREDENTIALS.user,
       rpcAuth: BITCOIN_CREDENTIALS.rpcauth,
     };
-    // use the node's custom image or the default for the implementation
+    // Use the node's custom image or the default for the implementation
     const image =
       node.docker.image || `${DOCKER_CONFIGS.bitcoind.imageName}:${version}`;
-    // use the node's custom command or the default for the implementation
+    // Use the node's custom command or the default for the implementation
     const nodeCommand = node.docker.command || DOCKER_CONFIGS.bitcoind.command;
-    // replace the variables in the command
+    // Replace the variables in the command
     const command = this.mergeCommand(nodeCommand, variables);
-    // add the docker service
+    // Add the docker service
     this.content.services[name] = bitcoind(
       name,
       container,
@@ -58,6 +58,17 @@ export class ComposeFile {
       zmqTx,
       command,
     );
+  }
+
+  addGanache(node: EthereumNode) {
+    const { name, version, ports } = node;
+    const { rpc } = ports;
+    const container = getContainerName(node);
+    // Use the node's custom image or the default for the implementation
+    const image =
+      node.docker.image || `${DOCKER_CONFIGS.ganache.imageName}:${version}`;
+    // Add the docker service
+    this.content.services[name] = ganache(name, container, image, rpc);
   }
 
   private mergeCommand(command: string, variables: Record<string, string>) {

@@ -56,7 +56,18 @@ export interface BitcoinNode extends CommonNode {
   };
 }
 
-export type NodeImplementation = BitcoinNode['implementation'];
+export interface EthereumNode extends CommonNode {
+  type: 'ethereum';
+  implementation: 'ganache';
+  peers: string[];
+  ports: {
+    rpc: number;
+  };
+}
+
+export type NodeImplementation =
+  | BitcoinNode['implementation']
+  | EthereumNode['implementation'];
 
 export interface AddNetworkArgs {
   name: string;
@@ -76,7 +87,7 @@ export interface Network {
   path: string;
   nodes: {
     bitcoin: BitcoinNode[];
-    // ethereum: EthereumNode[];
+    ethereum: EthereumNode[];
   };
 }
 

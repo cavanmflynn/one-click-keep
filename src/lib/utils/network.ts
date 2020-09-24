@@ -7,6 +7,7 @@ import {
   CommonNode,
   ManagedImage,
   OpenPorts,
+  EthereumNode,
 } from '@/types';
 import { networksPath } from './config';
 import { join } from 'path';
@@ -33,9 +34,10 @@ export const createNetwork = (config: CreateNetworkConfig) => {
     path: join(networksPath, id.toString()),
     nodes: {
       bitcoin: [],
+      ethereum: [],
     },
   };
-  const { bitcoin } = network.nodes;
+  const { bitcoin, ethereum } = network.nodes;
   const dockerWrap = (command: string) => ({ image: '', command });
   const images: ManagedImage[] = [];
   Object.entries(dockerRepoState.images).forEach(([type, entry]) => {
@@ -50,12 +52,24 @@ export const createNetwork = (config: CreateNetworkConfig) => {
 
   // Add bitcoin node
   const bitcoindVersion = dockerRepoState.images.bitcoind.latest;
-  const cmd = getImageCommand(images, 'bitcoind', bitcoindVersion);
+  const bitcoindCmd = getImageCommand(images, 'bitcoind', bitcoindVersion);
   bitcoin.push(
     createBitcoindNetworkNode(
       network,
       bitcoindVersion,
-      dockerWrap(cmd),
+      dockerWrap(bitcoindCmd),
+      status,
+    ),
+  );
+
+  // Add ethereum node
+  const ganacheVersion = dockerRepoState.images.ganache.latest;
+  const ganacheCmd = getImageCommand(images, 'ganache', ganacheVersion);
+  ethereum.push(
+    createGanacheNetworkNode(
+      network,
+      ganacheVersion,
+      dockerWrap(ganacheCmd),
       status,
     ),
   );
@@ -88,7 +102,7 @@ export const createBitcoindNetworkNode = (
   const { bitcoin } = network.nodes;
   const id = bitcoin.length ? Math.max(...bitcoin.map((n) => n.id)) + 1 : 0;
 
-  const name = `backend${id + 1}`;
+  const name = `bitcoin-${id + 1}`;
   const node: BitcoinNode = {
     id,
     networkId: network.id,
@@ -114,6 +128,34 @@ export const createBitcoindNetworkNode = (
     node.peers.push(prev.name);
     prev.peers.push(node.name);
   }
+
+  return node;
+};
+
+export const createGanacheNetworkNode = (
+  network: Network,
+  version: string,
+  docker: CommonNode['docker'],
+  status = Status.Stopped,
+): EthereumNode => {
+  const { ethereum } = network.nodes;
+  const id = ethereum.length ? Math.max(...ethereum.map((n) => n.id)) + 1 : 0;
+
+  const name = `ethereum-${id + 1}`;
+  const node: EthereumNode = {
+    id,
+    networkId: network.id,
+    name: name,
+    type: 'ethereum',
+    implementation: 'ganache',
+    version,
+    peers: [],
+    status,
+    ports: {
+      rpc: BASE_PORTS.ganache.rpc + id,
+    },
+    docker,
+  };
 
   return node;
 };
@@ -148,11 +190,11 @@ export const getMissingImages = (
   network: Network,
   pulled: string[],
 ): string[] => {
-  const { bitcoin } = network.nodes;
-  const requiredImages = [...bitcoin /*...lightning*/].map((n) => {
-    // use the custom image name if specified
+  const { bitcoin, ethereum } = network.nodes;
+  const requiredImages = [...bitcoin, ...ethereum].map((n) => {
+    // Use the custom image name if specified
     if (n.docker.image) return n.docker.image;
-    // convert implementation to image name: LND -> lnd, c-lightning -> clightning
+    // Convert implementation to image name
     const impl = n.implementation.toLocaleLowerCase().replace(/-/g, '');
     return `${DOCKER_REPO}/${impl}:${n.version}`;
   });
@@ -252,86 +294,20 @@ export const getOpenPorts = async (
     }
   }
 
-  // let { lnd, clightning, eclair } = groupNodes(network);
+  // Filter out nodes that are already started since their ports are in use by themselves
+  const ethereum = network.nodes.ethereum.filter(
+    (n) => n.status !== Status.Started,
+  );
+  if (ethereum.length) {
+    const existingPorts = ethereum.map((n) => n.ports.rpc);
+    const openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[ethereum[index].name] = { rpc: port };
+      });
+    }
+  }
 
-  // // filter out nodes that are already started since their ports are in use by themselves
-  // lnd = lnd.filter(n => n.status !== Status.Started);
-  // if (lnd.length) {
-  //   let existingPorts = lnd.map(n => n.ports.grpc);
-  //   let openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[lnd[index].name] = { grpc: port };
-  //     });
-  //   }
-
-  //   existingPorts = lnd.map(n => n.ports.rest);
-  //   openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[lnd[index].name] = {
-  //         ...(ports[lnd[index].name] || {}),
-  //         rest: port,
-  //       };
-  //     });
-  //   }
-
-  //   existingPorts = lnd.map(n => n.ports.p2p);
-  //   openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[lnd[index].name] = {
-  //         ...(ports[lnd[index].name] || {}),
-  //         p2p: port,
-  //       };
-  //     });
-  //   }
-  // }
-
-  // clightning = clightning.filter(n => n.status !== Status.Started);
-  // if (clightning.length) {
-  //   let existingPorts = clightning.map(n => n.ports.rest);
-  //   let openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[clightning[index].name] = { rest: port };
-  //     });
-  //   }
-
-  //   existingPorts = clightning.map(n => n.ports.p2p);
-  //   openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[clightning[index].name] = {
-  //         ...(ports[clightning[index].name] || {}),
-  //         p2p: port,
-  //       };
-  //     });
-  //   }
-  // }
-
-  // eclair = eclair.filter(n => n.status !== Status.Started);
-  // if (eclair.length) {
-  //   let existingPorts = eclair.map(n => n.ports.rest);
-  //   let openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[eclair[index].name] = { rest: port };
-  //     });
-  //   }
-
-  //   existingPorts = eclair.map(n => n.ports.p2p);
-  //   openPorts = await getOpenPortRange(existingPorts);
-  //   if (openPorts.join() !== existingPorts.join()) {
-  //     openPorts.forEach((port, index) => {
-  //       ports[eclair[index].name] = {
-  //         ...(ports[eclair[index].name] || {}),
-  //         p2p: port,
-  //       };
-  //     });
-  //   }
-  // }
-
-  // return undefined if no ports where updated
+  // Return undefined if no ports where updated
   return Object.keys(ports).length > 0 ? ports : undefined;
 };

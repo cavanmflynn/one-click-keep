@@ -7,14 +7,15 @@ import {
   OpenPorts,
   CommonNode,
   BitcoinNode,
+  EthereumNode,
 } from '@/types';
 import { docker } from '@/lib/docker/docker-service';
 import {
   createNetwork,
   getNetworkById,
   getOpenPorts,
-  delay,
   bitcoindService,
+  ethereumService,
 } from '@/lib/utils';
 import { system, bitcoind } from '..';
 import { info } from 'electron-log';
@@ -59,15 +60,17 @@ export class NetworkModule extends VuexModule {
     };
     if (only) {
       // Only update a specific node's status
-      // network.nodes.lightning.filter(n => n.name === only).forEach(setNodeStatus);
       network.nodes.bitcoin
+        .filter((n) => n.name === only)
+        .forEach(setNodeStatus);
+      network.nodes.ethereum
         .filter((n) => n.name === only)
         .forEach(setNodeStatus);
     } else if (all) {
       // Update all node statuses
       network.status = status;
       network.nodes.bitcoin.forEach(setNodeStatus);
-      // network.nodes.lightning.forEach(setNodeStatus);
+      network.nodes.ethereum.forEach(setNodeStatus);
     } else {
       // If no specific node name provided, just update the network status
       network.status = status;
@@ -86,9 +89,9 @@ export class NetworkModule extends VuexModule {
     network.nodes.bitcoin
       .filter((n) => !!ports[n.name])
       .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
-    // network.nodes.lightning
-    //   .filter(n => !!ports[n.name])
-    //   .forEach(n => (n.ports = { ...n.ports, ...ports[n.name] }));
+    network.nodes.ethereum
+      .filter((n) => !!ports[n.name])
+      .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
   }
 
   @Action({ rawError: true })
@@ -134,11 +137,11 @@ export class NetworkModule extends VuexModule {
       await docker.start(network);
       // Update the list of docker images pulled since new images may be pulled
       await system.getDockerImages();
-      // set the status of only the network to Started
+      // Set the status of only the network to Started
       this.setStatus({ id, status: Status.Started, all: false });
       // Wait for nodes to startup before updating their status
       await this.monitorStartup([
-        // ...network.nodes.lightning,
+        ...network.nodes.ethereum,
         ...network.nodes.bitcoin,
       ]);
     } catch (error) {
@@ -175,26 +178,29 @@ export class NetworkModule extends VuexModule {
   async monitorStartup(nodes: CommonNode[]) {
     if (!nodes.length) return;
     const id = nodes[0].networkId;
-    const network = getNetworkById(this._networks, id);
 
     // const lnNodesOnline: Promise<void>[] = [];
+    const ethNodesOnline: Promise<void>[] = [];
     const btcNodesOnline: Promise<void>[] = [];
     for (const node of nodes) {
       // Wait for lnd nodes to come online before updating their status TODO
       switch (node.type) {
         case 'ethereum': {
-          // const ln = node as LightningNode;
-          // // use .then() to continue execution while the promises are waiting to complete
-          // const promise = injections.lightningFactory
-          //   .getService(ln)
-          //   .waitUntilOnline(ln)
-          //   .then(async () => {
-          //     actions.setStatus({ id, status: Status.Started, only: ln.name });
-          //   })
-          //   .catch(error =>
-          //     actions.setStatus({ id, status: Status.Error, only: ln.name, error }),
-          //   );
-          // lnNodesOnline.push(promise);
+          const eth = node as EthereumNode;
+          const promise = ethereumService
+            .waitUntilOnline(eth)
+            .then(async () => {
+              this.setStatus({ id, status: Status.Started, only: eth.name });
+            })
+            .catch((error) =>
+              this.setStatus({
+                id,
+                status: Status.Error,
+                only: eth.name,
+                error,
+              }),
+            );
+          ethNodesOnline.push(promise);
           break;
         }
         case 'bitcoin': {
@@ -222,22 +228,5 @@ export class NetworkModule extends VuexModule {
         }
       }
     }
-    // After all bitcoin nodes are online, mine one block so that Eclair nodes will start
-    if (btcNodesOnline.length) {
-      const [node] = network.nodes.bitcoin;
-      await Promise.all(btcNodesOnline)
-        .then(async () => {
-          await delay(2000);
-          await bitcoind.mine({ node, blocks: 1 });
-        })
-        .catch((e) => info('Failed to mine a block after network startup', e));
-    }
-    // after all LN nodes are online, connect each of them to each other. This helps
-    // ensure that each node is aware of the entire graph and can route payments properly
-    // if (lnNodesOnline.length) {
-    //   await Promise.all(lnNodesOnline)
-    //     .then(async () => await getStoreActions().lightning.connectAllPeers(network))
-    //     .catch(e => info('Failed to connect all LN peers', e));
-    // }
   }
 }
