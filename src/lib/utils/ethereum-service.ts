@@ -4,7 +4,7 @@ import { waitFor } from './async';
 
 class EthereumService {
   createClient(node: EthereumNode) {
-    return new providers.JsonRpcProvider(`127.0.0.1:${node.ports.rpc}`);
+    return new providers.JsonRpcProvider(`http://localhost:${node.ports.rpc}`);
   }
 
   async getLatestBlock(node: EthereumNode) {

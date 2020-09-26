@@ -65,6 +65,7 @@ class TomlService {
       },
       LibP2P: {
         Port: 3919,
+        Peers: beacon.peers,
       },
       Storage: {
         DataDir: '/storage',
@@ -92,6 +93,7 @@ class TomlService {
       },
       LibP2P: {
         Port: 3919,
+        Peers: ecdsa.peers,
       },
       Storage: {
         DataDir: '/storage',

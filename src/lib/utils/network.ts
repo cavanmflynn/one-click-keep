@@ -18,6 +18,7 @@ import { debug } from 'electron-log';
 import detectPort from 'detect-port';
 import { languageLibrary } from '@/localization';
 import { system } from '@/store';
+import { getKeepNodePeer } from './keep';
 
 export const createNetwork = (config: CreateNetworkConfig) => {
   const { id, name, ecdsaNodes, beaconNodes, dockerRepoState } = config;
@@ -147,7 +148,6 @@ export const createBitcoindNetworkNode = (
     docker,
   };
 
-  // TODO: Probably unnecessary
   // peer up with the previous node on both sides
   if (bitcoin.length > 0) {
     const prev = bitcoin[bitcoin.length - 1];
@@ -211,6 +211,13 @@ export const createBeaconNetworkNode = (
     docker,
   };
 
+  // peer up with the previous node on both sides
+  if (beacon.length > 0) {
+    const prev = beacon[beacon.length - 1];
+    node.peers.push(getKeepNodePeer(prev));
+    prev.peers.push(getKeepNodePeer(node));
+  }
+
   return node;
 };
 
@@ -238,6 +245,13 @@ export const createEcdsaNetworkNode = (
     },
     docker,
   };
+
+  // peer up with the previous node on both sides
+  if (ecdsa.length > 0) {
+    const prev = ecdsa[ecdsa.length - 1];
+    node.peers.push(getKeepNodePeer(prev));
+    prev.peers.push(getKeepNodePeer(node));
+  }
 
   return node;
 };

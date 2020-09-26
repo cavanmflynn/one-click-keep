@@ -4,6 +4,7 @@ export * from './browser';
 export * from './config';
 export * from './ethereum-service';
 export * from './files';
+export * from './keep';
 export * from './keystore';
 export * from './keystore-service';
 export * from './network';

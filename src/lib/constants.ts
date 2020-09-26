@@ -151,6 +151,17 @@ export const KEEP_BEACON_CREDENTIALS = {
 export const KEEP_ECDSA_CREDENTIALS = {
   ethereumPassword: 'keeppass',
 };
+export const KEEP_ECDSA_PEER_IDS = [
+  '16Uiu2HAmDLCM1u8me5pDJRdNtwc5jKFEEbKfL5XXbYyMwXYrmhzY',
+  '16Uiu2HAmTdhwwTe8rYodjE4wFJE6h6ECfUDdC7ZYA7wag2HPWk8L',
+  '16Uiu2HAmRGrPJ6Ybz6KvU4SU7YCDeporxBqnHFvLTVxQTQ8xenbh',
+  '16Uiu2HAmK7DUaPqq9zfJDLc9KG9YvQYjxjs8u8Ua1KTXTT8Ldfkb',
+  '16Uiu2HAmVU4WPY3jJbCFrnhTFJ9rfoayC8sDiRa6dJJzZGcLDect',
+  '16Uiu2HAmRRzaPauLTSCyVQg2JfgCSi5j4BGangTpemMiYpr9pTFS',
+  '16Uiu2HAmQFVJxPqTcyXRhnjNFXn4a47k2UkqiA5JS6tgmTjMa8V4',
+  '16Uiu2HAkwBADLmtWyJFX9okZk8rVxhaU8C6GqHxxdRRQHxMYo9SN',
+  '16Uiu2HAmFhhMAXRpwHPuyyBGp9mLcSYJD5WRGtLS7vpqVK1uBBLA',
+];
 
 // Ethereum
 export const ETHEREUM_ACCOUNTS = [

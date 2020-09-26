@@ -21,8 +21,8 @@ class KeystoreService {
       );
       await ensureDir(directory);
       return write(
-        join(directory, `account-${node.id + 2}`),
-        JSON.stringify(ETHEREUM_KEYSTORES[node.id + 2]),
+        join(directory, `account-${node.id + 2}`), // Index offset + skip owner account
+        JSON.stringify(ETHEREUM_KEYSTORES[node.id + 1]), // Skip owner account
       );
     });
     const ecdsaWritePromises = ecdsa.map(async (node) => {
@@ -32,8 +32,8 @@ class KeystoreService {
       );
       await ensureDir(directory);
       return write(
-        join(directory, `account-${node.id + 2}`),
-        JSON.stringify(ETHEREUM_KEYSTORES[node.id + 2]),
+        join(directory, `account-${node.id + 2}`), // Index offset + skip owner account
+        JSON.stringify(ETHEREUM_KEYSTORES[node.id + 1]), // Skip owner account
       );
     });
 
