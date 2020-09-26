@@ -4,9 +4,9 @@ import { write } from './files';
 import { join } from 'path';
 import TOML from '@iarna/toml';
 import { getContainerName } from '../docker';
-import { contracts } from '../contracts';
 import { nodePath } from './config';
 import { ensureDir } from 'fs-extra';
+import { CONTRACTS } from '../constants';
 
 class TomlService {
   /**
@@ -49,6 +49,7 @@ class TomlService {
    * @param ethereum The ethereum node
    * @param beacon The Beacon node
    */
+  // prettier-ignore
   getBeaconConfig(ethereum: EthereumNode, beacon: BeaconNode): string {
     return TOML.stringify({
       ethereum: {
@@ -58,9 +59,8 @@ class TomlService {
           KeyFile: `/keystore/account-${beacon.id + 2}`, // Index offset + skip owner account
         },
         ContractAddresses: {
-          KeepRandomBeaconOperator:
-            contracts.keep.core.KeepRandomBeaconOperator.address,
-          TokenStaking: contracts.keep.core.TokenStaking.address,
+          KeepRandomBeaconOperator: CONTRACTS.KEEP.CORE.KEEP_RANDOM_BEACON_OPERATOR.ADDRESS,
+          TokenStaking: CONTRACTS.KEEP.CORE.TOKEN_STAKING.ADDRESS,
         },
       },
       LibP2P: {
@@ -77,6 +77,7 @@ class TomlService {
    * @param ethereum The ethereum node
    * @param ecdsa The ECDSA node
    */
+  // prettier-ignore
   getEcdsaConfig(ethereum: EthereumNode, ecdsa: EcdsaNode): string {
     return TOML.stringify({
       ethereum: {
@@ -86,8 +87,7 @@ class TomlService {
           KeyFile: `/keystore/account-${ecdsa.id + 2}`, // Index offset + skip owner account
         },
         ContractAddresses: {
-          BondedECDSAKeepFactory:
-            contracts.keep.ecdsa.BondedECDSAKeepFactory.address,
+          BondedECDSAKeepFactory: CONTRACTS.KEEP.ECDSA.BONDED_ECDSA_KEEP_FACTORY.ADDRESS,
         },
       },
       LibP2P: {
