@@ -12,6 +12,14 @@
     "ganache": {
       "latest": "6.10.2",
       "versions": ["6.10.2"]
+    },
+    "keep-beacon": {
+      "latest": "1.3.0",
+      "versions": ["1.3.0"]
+    },
+    "keep-ecdsa": {
+      "latest": "1.2.0",
+      "versions": ["1.2.0"]
     }
   }
 }

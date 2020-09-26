@@ -16,6 +16,8 @@ import {
   getOpenPorts,
   bitcoindService,
   ethereumService,
+  toml,
+  keystore,
 } from '@/lib/utils';
 import { system, bitcoind } from '..';
 import { info } from 'electron-log';
@@ -66,11 +68,17 @@ export class NetworkModule extends VuexModule {
       network.nodes.ethereum
         .filter((n) => n.name === only)
         .forEach(setNodeStatus);
+      network.nodes.beacon
+        .filter((n) => n.name === only)
+        .forEach(setNodeStatus);
+      network.nodes.ecdsa.filter((n) => n.name === only).forEach(setNodeStatus);
     } else if (all) {
       // Update all node statuses
       network.status = status;
       network.nodes.bitcoin.forEach(setNodeStatus);
       network.nodes.ethereum.forEach(setNodeStatus);
+      network.nodes.beacon.forEach(setNodeStatus);
+      network.nodes.ecdsa.forEach(setNodeStatus);
     } else {
       // If no specific node name provided, just update the network status
       network.status = status;
@@ -92,6 +100,12 @@ export class NetworkModule extends VuexModule {
     network.nodes.ethereum
       .filter((n) => !!ports[n.name])
       .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
+    network.nodes.beacon
+      .filter((n) => !!ports[n.name])
+      .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
+    network.nodes.ecdsa
+      .filter((n) => !!ports[n.name])
+      .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
   }
 
   @Action({ rawError: true })
@@ -102,7 +116,11 @@ export class NetworkModule extends VuexModule {
       id: nextId,
       dockerRepoState: system.dockerRepoState,
     });
-    await docker.saveComposeFile(network);
+    await Promise.all([
+      toml.saveTomlFiles(network),
+      docker.saveComposeFile(network),
+      keystore.saveKeystoreFiles(network),
+    ]);
     this.addNetwork(network);
     return network;
   }
@@ -141,8 +159,10 @@ export class NetworkModule extends VuexModule {
       this.setStatus({ id, status: Status.Started, all: false });
       // Wait for nodes to startup before updating their status
       await this.monitorStartup([
-        ...network.nodes.ethereum,
         ...network.nodes.bitcoin,
+        ...network.nodes.ethereum,
+        ...network.nodes.beacon,
+        ...network.nodes.ecdsa,
       ]);
     } catch (error) {
       this.setStatus({ id, status: Status.Error });
@@ -180,29 +200,11 @@ export class NetworkModule extends VuexModule {
     const id = nodes[0].networkId;
 
     // const lnNodesOnline: Promise<void>[] = [];
-    const ethNodesOnline: Promise<void>[] = [];
     const btcNodesOnline: Promise<void>[] = [];
+    const ethNodesOnline: Promise<void>[] = [];
     for (const node of nodes) {
       // Wait for lnd nodes to come online before updating their status TODO
       switch (node.type) {
-        case 'ethereum': {
-          const eth = node as EthereumNode;
-          const promise = ethereumService
-            .waitUntilOnline(eth)
-            .then(async () => {
-              this.setStatus({ id, status: Status.Started, only: eth.name });
-            })
-            .catch((error) =>
-              this.setStatus({
-                id,
-                status: Status.Error,
-                only: eth.name,
-                error,
-              }),
-            );
-          ethNodesOnline.push(promise);
-          break;
-        }
         case 'bitcoin': {
           const btc = node as BitcoinNode;
           // Wait for bitcoind nodes to come online before updating their status
@@ -224,6 +226,32 @@ export class NetworkModule extends VuexModule {
               }),
             );
           btcNodesOnline.push(promise);
+          break;
+        }
+        case 'ethereum': {
+          const eth = node as EthereumNode;
+          const promise = ethereumService
+            .waitUntilOnline(eth)
+            .then(async () => {
+              this.setStatus({ id, status: Status.Started, only: eth.name });
+            })
+            .catch((error) =>
+              this.setStatus({
+                id,
+                status: Status.Error,
+                only: eth.name,
+                error,
+              }),
+            );
+          ethNodesOnline.push(promise);
+          break;
+        }
+        case 'beacon': {
+          // TODO
+          break;
+        }
+        case 'ecdsa': {
+          // TODO
           break;
         }
       }

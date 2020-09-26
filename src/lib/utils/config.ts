@@ -14,7 +14,7 @@ export const dataPath = join(remote.app.getPath('home'), '.one-click-keep');
 export const networksPath = join(dataPath, 'networks');
 
 /**
- * returns a path to store dtat for an individual node
+ * Returns a path to store data for an individual node
  */
 export const nodePath = (
   network: Network,

@@ -8,6 +8,8 @@ import {
   ManagedImage,
   OpenPorts,
   EthereumNode,
+  BeaconNode,
+  EcdsaNode,
 } from '@/types';
 import { networksPath } from './config';
 import { join } from 'path';
@@ -18,13 +20,7 @@ import { languageLibrary } from '@/localization';
 import { system } from '@/store';
 
 export const createNetwork = (config: CreateNetworkConfig) => {
-  const {
-    id,
-    name,
-    // ecdsaNodeCount, TODO
-    // randomBeaconNodeCount,
-    dockerRepoState,
-  } = config;
+  const { id, name, ecdsaNodes, beaconNodes, dockerRepoState } = config;
 
   const status = Status.Stopped;
   const network: Network = {
@@ -35,9 +31,11 @@ export const createNetwork = (config: CreateNetworkConfig) => {
     nodes: {
       bitcoin: [],
       ethereum: [],
+      beacon: [],
+      ecdsa: [],
     },
   };
-  const { bitcoin, ethereum } = network.nodes;
+  const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
   const dockerWrap = (command: string) => ({ image: '', command });
   const images: ManagedImage[] = [];
   Object.entries(dockerRepoState.images).forEach(([type, entry]) => {
@@ -73,6 +71,34 @@ export const createNetwork = (config: CreateNetworkConfig) => {
       status,
     ),
   );
+
+  // Add beacon nodes
+  for (let i = 0; i < beaconNodes; i++) {
+    const beaconVersion = dockerRepoState.images['keep-beacon'].latest;
+    const beaconCmd = getImageCommand(images, 'keep-beacon', beaconVersion);
+    beacon.push(
+      createBeaconNetworkNode(
+        network,
+        beaconVersion,
+        dockerWrap(beaconCmd),
+        status,
+      ),
+    );
+  }
+
+  // Add ecdsa nodes
+  for (let i = 0; i < ecdsaNodes; i++) {
+    const ecdsaVersion = dockerRepoState.images['keep-ecdsa'].latest;
+    const ecdsaCmd = getImageCommand(images, 'keep-ecdsa', ecdsaVersion);
+    ecdsa.push(
+      createEcdsaNetworkNode(
+        network,
+        ecdsaVersion,
+        dockerWrap(ecdsaCmd),
+        status,
+      ),
+    );
+  }
 
   return network;
 };
@@ -160,6 +186,62 @@ export const createGanacheNetworkNode = (
   return node;
 };
 
+export const createBeaconNetworkNode = (
+  network: Network,
+  version: string,
+  docker: CommonNode['docker'],
+  status = Status.Stopped,
+): BeaconNode => {
+  const { beacon } = network.nodes;
+  const id = beacon.length ? Math.max(...beacon.map((n) => n.id)) + 1 : 0;
+
+  const name = `beacon-${id + 1}`;
+  const node: BeaconNode = {
+    id,
+    networkId: network.id,
+    name: name,
+    type: 'beacon',
+    implementation: 'keep-beacon',
+    version,
+    peers: [],
+    status,
+    ports: {
+      p2p: BASE_PORTS['keep-beacon'].p2p + id,
+    },
+    docker,
+  };
+
+  return node;
+};
+
+export const createEcdsaNetworkNode = (
+  network: Network,
+  version: string,
+  docker: CommonNode['docker'],
+  status = Status.Stopped,
+): EcdsaNode => {
+  const { ecdsa } = network.nodes;
+  const id = ecdsa.length ? Math.max(...ecdsa.map((n) => n.id)) + 1 : 0;
+
+  const name = `ecdsa-${id + 1}`;
+  const node: EcdsaNode = {
+    id,
+    networkId: network.id,
+    name: name,
+    type: 'ecdsa',
+    implementation: 'keep-ecdsa',
+    version,
+    peers: [],
+    status,
+    ports: {
+      p2p: BASE_PORTS['keep-ecdsa'].p2p + id,
+    },
+    docker,
+  };
+
+  return node;
+};
+
 /**
  * Get a network by its id
  * @param networks All networks
@@ -190,14 +272,16 @@ export const getMissingImages = (
   network: Network,
   pulled: string[],
 ): string[] => {
-  const { bitcoin, ethereum } = network.nodes;
-  const requiredImages = [...bitcoin, ...ethereum].map((n) => {
-    // Use the custom image name if specified
-    if (n.docker.image) return n.docker.image;
-    // Convert implementation to image name
-    const impl = n.implementation.toLocaleLowerCase().replace(/-/g, '');
-    return `${DOCKER_REPO}/${impl}:${n.version}`;
-  });
+  const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
+  const requiredImages = [...bitcoin, ...ethereum, ...beacon, ...ecdsa].map(
+    (n) => {
+      // Use the custom image name if specified
+      if (n.docker.image) return n.docker.image;
+      // Convert implementation to image name
+      const impl = n.implementation.toLocaleLowerCase().replace(/-/g, '');
+      return `${DOCKER_REPO}/${impl}:${n.version}`;
+    },
+  );
   // Exclude images already pulled
   const missing = requiredImages.filter((i) => !pulled.includes(i));
   // Filter out duplicates
@@ -304,6 +388,32 @@ export const getOpenPorts = async (
     if (openPorts.join() !== existingPorts.join()) {
       openPorts.forEach((port, index) => {
         ports[ethereum[index].name] = { rpc: port };
+      });
+    }
+  }
+
+  // Filter out nodes that are already started since their ports are in use by themselves
+  const beacon = network.nodes.beacon.filter(
+    (n) => n.status !== Status.Started,
+  );
+  if (beacon.length) {
+    const existingPorts = beacon.map((n) => n.ports.p2p);
+    const openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[beacon[index].name] = { p2p: port };
+      });
+    }
+  }
+
+  // Filter out nodes that are already started since their ports are in use by themselves
+  const ecdsa = network.nodes.ecdsa.filter((n) => n.status !== Status.Started);
+  if (ecdsa.length) {
+    const existingPorts = ecdsa.map((n) => n.ports.p2p);
+    const openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[ecdsa[index].name] = { p2p: port };
       });
     }
   }

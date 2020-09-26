@@ -13,6 +13,8 @@ import {
   Network,
   NetworksFile,
   EthereumNode,
+  BeaconNode,
+  EcdsaNode,
 } from '@/types';
 import stripAnsi from 'strip-ansi';
 import { APP_VERSION } from '../constants';
@@ -81,27 +83,12 @@ class DockerService {
    */
   async saveComposeFile(network: Network) {
     const file = new ComposeFile();
-    const { bitcoin, ethereum } = network.nodes;
+    const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
 
     bitcoin.forEach((node) => file.addBitcoind(node));
     ethereum.forEach((node) => file.addGanache(node));
-    // lightning.forEach(node => {
-    //   if (node.implementation === 'LND') {
-    //     const lnd = node as LndNode;
-    //     const backend = bitcoin.find(n => n.name === lnd.backendName) || bitcoin[0];
-    //     file.addLnd(lnd, backend);
-    //   }
-    //   if (node.implementation === 'c-lightning') {
-    //     const cln = node as CLightningNode;
-    //     const backend = bitcoin.find(n => n.name === cln.backendName) || bitcoin[0];
-    //     file.addClightning(cln, backend);
-    //   }
-    //   if (node.implementation === 'eclair') {
-    //     const eclair = node as EclairNode;
-    //     const backend = bitcoin.find(n => n.name === eclair.backendName) || bitcoin[0];
-    //     file.addEclair(eclair, backend);
-    //   }
-    // });
+    beacon.forEach((node) => file.addKeepBeacon(node));
+    ecdsa.forEach((node) => file.addKeepEcdsa(node));
 
     const yml = yaml.dump(file.content);
     const path = join(network.path, 'docker-compose.yml');
@@ -114,8 +101,13 @@ class DockerService {
    * @param network the network to start
    */
   async start(network: Network) {
-    const { bitcoin, ethereum } = network.nodes;
-    await this.ensureDirs(network, [...bitcoin, ...ethereum]);
+    const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
+    await this.ensureDirs(network, [
+      ...bitcoin,
+      ...ethereum,
+      ...beacon,
+      ...ecdsa,
+    ]);
 
     info(`Starting docker containers for ${network.name}`);
     info(` - path: ${network.path}`);
@@ -273,8 +265,12 @@ class DockerService {
     // owned by root and linux containers won't start up due to
     // permission errors
     for (const commonNode of nodes) {
-      // need to cast so typescript doesn't complain about 'implementation'
-      const node = commonNode as BitcoinNode | EthereumNode;
+      // Need to cast so typescript doesn't complain about 'implementation'
+      const node = commonNode as
+        | BitcoinNode
+        | EthereumNode
+        | BeaconNode
+        | EcdsaNode;
       const nodeDir = nodePath(network, node.implementation, node.name);
       await ensureDir(nodeDir);
     }

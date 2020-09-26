@@ -28,7 +28,7 @@ export enum Status {
   Error,
 }
 
-export type NodeType = 'bitcoin' | 'ethereum';
+export type NodeType = 'bitcoin' | 'ethereum' | 'beacon' | 'ecdsa';
 
 export interface CommonNode {
   id: number;
@@ -65,14 +65,34 @@ export interface EthereumNode extends CommonNode {
   };
 }
 
+export interface BeaconNode extends CommonNode {
+  type: 'beacon';
+  implementation: 'keep-beacon';
+  peers: string[];
+  ports: {
+    p2p: number;
+  };
+}
+
+export interface EcdsaNode extends CommonNode {
+  type: 'ecdsa';
+  implementation: 'keep-ecdsa';
+  peers: string[];
+  ports: {
+    p2p: number;
+  };
+}
+
 export type NodeImplementation =
   | BitcoinNode['implementation']
-  | EthereumNode['implementation'];
+  | EthereumNode['implementation']
+  | BeaconNode['implementation']
+  | EcdsaNode['implementation'];
 
 export interface AddNetworkArgs {
   name: string;
-  randomBeaconNodeCount: number;
-  ecdsaNodeCount: number;
+  beaconNodes: number;
+  ecdsaNodes: number;
 }
 
 export interface CreateNetworkConfig extends AddNetworkArgs {
@@ -88,6 +108,8 @@ export interface Network {
   nodes: {
     bitcoin: BitcoinNode[];
     ethereum: EthereumNode[];
+    beacon: BeaconNode[];
+    ecdsa: EcdsaNode[];
   };
 }
 

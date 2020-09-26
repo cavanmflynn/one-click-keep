@@ -34,6 +34,36 @@ $ docker build --build-arg GANACHE_VERSION=<version> -t oneclickkeep/ganache:<ve
 
 Replace `<version>` with the desired ganache-cli version (ex: `6.10.2`)
 
+## KEEP Beacon
+
+### Tags
+
+- `1.3.0` ([keep-beacon/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/keep-beacon/Dockerfile))
+
+**Building the image**
+
+```sh
+$ cd keep-beacon
+$ docker build --build-arg KEEP_BEACON_VERSION=<version> -t oneclickkeep/keep-beacon:<version> .
+```
+
+Replace `<version>` with the desired keep beacon version (ex: `1.3.0`)
+
+## KEEP ECDSA
+
+### Tags
+
+- `1.2.0` ([keep-ecdsa/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/keep-ecdsa/Dockerfile))
+
+**Building the image**
+
+```sh
+$ cd keep-edsa
+$ docker build --build-arg KEEP_ECDSA_VERSION=<version> -t oneclickkeep/keep-ecdsa:<version> .
+```
+
+Replace `<version>` with the desired keep ecdsa version (ex: `1.2.0`)
+
 **Push to Docker Hub**
 
 ```sh
@@ -42,6 +72,14 @@ $ docker push oneclickkeep/bitcoind:<version>
 
 ```sh
 $ docker push oneclickkeep/ganache:<version>
+```
+
+```sh
+$ docker push oneclickkeep/keep-beacon:<version>
+```
+
+```sh
+$ docker push oneclickkeep/keep-ecdsa:<version>
 ```
 
 # Out-of-Band Image Updates

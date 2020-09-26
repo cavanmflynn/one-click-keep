@@ -23,7 +23,7 @@
             :min="1"
             :max="10"
             v-decorator="[
-              'randomBeaconNodeCount',
+              'beaconNodes',
               {
                 rules: [{ type: 'number', required: true, message: $lang.translate('RANDOM_BEACON_NODE_REQUIRED') }],
                 initialValue: 1,
@@ -35,10 +35,10 @@
       <a-col :span="6">
         <a-form-item :label="'ECDSA_SIGNING' | translate">
           <a-input-number
-            :min="3"
+            :min="1"
             :max="10"
             v-decorator="[
-            'ecdsaNodeCount',
+            'ecdsaNodes',
             {
               rules: [{ type: 'number', required: true, message: $lang.translate('ECDSA_SIGNING_NODE_REQUIRED') }],
               initialValue: 3,
