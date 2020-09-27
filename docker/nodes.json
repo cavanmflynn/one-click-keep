@@ -9,6 +9,10 @@
       "latest": "",
       "versions": []
     },
+    "elextrumx": {
+      "latest": "1.15.0",
+      "versions": ["1.15.0"]
+    },
     "ganache": {
       "latest": "6.10.2",
       "versions": ["6.10.2"]

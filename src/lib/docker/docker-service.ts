@@ -83,10 +83,11 @@ class DockerService {
    */
   async saveComposeFile(network: Network) {
     const file = new ComposeFile();
-    const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
+    const { bitcoin, ethereum, electrum, beacon, ecdsa } = network.nodes;
 
     bitcoin.forEach((node) => file.addBitcoind(node));
     ethereum.forEach((node) => file.addGanache(node));
+    electrum.forEach((node) => file.addElectrumX(node, bitcoin[0])); // Currently only one BTC node supported
     beacon.forEach((node) => file.addKeepBeacon(node));
     ecdsa.forEach((node) => file.addKeepEcdsa(node));
 

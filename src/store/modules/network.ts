@@ -68,6 +68,9 @@ export class NetworkModule extends VuexModule {
       network.nodes.ethereum
         .filter((n) => n.name === only)
         .forEach(setNodeStatus);
+      network.nodes.electrum
+        .filter((n) => n.name === only)
+        .forEach(setNodeStatus);
       network.nodes.beacon
         .filter((n) => n.name === only)
         .forEach(setNodeStatus);
@@ -77,6 +80,7 @@ export class NetworkModule extends VuexModule {
       network.status = status;
       network.nodes.bitcoin.forEach(setNodeStatus);
       network.nodes.ethereum.forEach(setNodeStatus);
+      network.nodes.electrum.forEach(setNodeStatus);
       network.nodes.beacon.forEach(setNodeStatus);
       network.nodes.ecdsa.forEach(setNodeStatus);
     } else {
@@ -98,6 +102,9 @@ export class NetworkModule extends VuexModule {
       .filter((n) => !!ports[n.name])
       .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
     network.nodes.ethereum
+      .filter((n) => !!ports[n.name])
+      .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
+    network.nodes.electrum
       .filter((n) => !!ports[n.name])
       .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
     network.nodes.beacon
@@ -161,6 +168,7 @@ export class NetworkModule extends VuexModule {
       await this.monitorStartup([
         ...network.nodes.bitcoin,
         ...network.nodes.ethereum,
+        ...network.nodes.electrum,
         ...network.nodes.beacon,
         ...network.nodes.ecdsa,
       ]);

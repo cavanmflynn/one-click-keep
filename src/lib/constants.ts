@@ -19,7 +19,8 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
       'bitcoind',
       '-server=1',
       '-regtest=1',
-      '-rpcauth={{rpcUser}}:{{rpcAuth}}',
+      '-rpcuser={{rpcUser}}',
+      '-rpcpassword={{rpcPass}}',
       '-debug=1',
       '-zmqpubrawblock=tcp://0.0.0.0:28334',
       '-zmqpubrawtx=tcp://0.0.0.0:28335',
@@ -34,7 +35,7 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
       '-fallbackfee=0.0002',
     ].join('\n  '),
     // If vars are modified, also update compose-file.ts
-    variables: ['rpcUser', 'rpcAuth'],
+    variables: ['rpcUser', 'rpcPass'],
   },
   btcd: {
     name: 'btcd',
@@ -51,6 +52,15 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
     logo: ganacheLogo,
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'ganache',
+    command: '',
+    variables: [],
+  },
+  electrumx: {
+    name: 'ElectrumX',
+    imageName: 'oneclickkeep/electrumx',
+    logo: '',
+    platforms: ['mac', 'linux', 'windows'],
+    volumeDirName: 'electrumx',
     command: '',
     variables: [],
   },
@@ -93,6 +103,10 @@ export const DEFAULT_REPO_STATE: DockerRepoState = {
       latest: '6.10.2',
       versions: ['6.10.2'],
     },
+    electrumx: {
+      latest: '1.15.0',
+      versions: ['1.15.0'],
+    },
     'keep-beacon': {
       latest: '1.3.0',
       versions: ['1.3.0'],
@@ -119,6 +133,13 @@ export const BASE_PORTS: Record<NodeImplementation, Record<string, number>> = {
   btcd: {},
   ganache: {
     rpc: 8545,
+  },
+  electrumx: {
+    tcp: 50001,
+    ssl: 50002,
+    ws: 50003,
+    wss: 50004,
+    rpc: 8000,
   },
   'keep-beacon': {
     p2p: 3819,

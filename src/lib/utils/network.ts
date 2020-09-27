@@ -10,6 +10,7 @@ import {
   EthereumNode,
   BeaconNode,
   EcdsaNode,
+  ElectrumNode,
 } from '@/types';
 import { networksPath } from './config';
 import { join } from 'path';
@@ -32,11 +33,12 @@ export const createNetwork = (config: CreateNetworkConfig) => {
     nodes: {
       bitcoin: [],
       ethereum: [],
+      electrum: [],
       beacon: [],
       ecdsa: [],
     },
   };
-  const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
+  const { bitcoin, ethereum, electrum, beacon, ecdsa } = network.nodes;
   const dockerWrap = (command: string) => ({ image: '', command });
   const images: ManagedImage[] = [];
   Object.entries(dockerRepoState.images).forEach(([type, entry]) => {
@@ -69,6 +71,18 @@ export const createNetwork = (config: CreateNetworkConfig) => {
       network,
       ganacheVersion,
       dockerWrap(ganacheCmd),
+      status,
+    ),
+  );
+
+  // Add electrum node
+  const electrumxVersion = dockerRepoState.images.electrumx.latest;
+  const electrumxCmd = getImageCommand(images, 'electrumx', electrumxVersion);
+  electrum.push(
+    createElectrumXNetworkNode(
+      network,
+      electrumxVersion,
+      dockerWrap(electrumxCmd),
       status,
     ),
   );
@@ -186,6 +200,38 @@ export const createGanacheNetworkNode = (
   return node;
 };
 
+export const createElectrumXNetworkNode = (
+  network: Network,
+  version: string,
+  docker: CommonNode['docker'],
+  status = Status.Stopped,
+): ElectrumNode => {
+  const { electrum } = network.nodes;
+  const id = electrum.length ? Math.max(...electrum.map((n) => n.id)) + 1 : 0;
+
+  const name = `electrum-${id + 1}`;
+  const node: ElectrumNode = {
+    id,
+    networkId: network.id,
+    name: name,
+    type: 'electrum',
+    implementation: 'electrumx',
+    version,
+    peers: [],
+    status,
+    ports: {
+      tcp: BASE_PORTS.electrumx.tcp + id,
+      ssl: BASE_PORTS.electrumx.ssl + id,
+      ws: BASE_PORTS.electrumx.ws + id,
+      wss: BASE_PORTS.electrumx.wss + id,
+      rpc: BASE_PORTS.electrumx.rpc + id,
+    },
+    docker,
+  };
+
+  return node;
+};
+
 export const createBeaconNetworkNode = (
   network: Network,
   version: string,
@@ -286,16 +332,20 @@ export const getMissingImages = (
   network: Network,
   pulled: string[],
 ): string[] => {
-  const { bitcoin, ethereum, beacon, ecdsa } = network.nodes;
-  const requiredImages = [...bitcoin, ...ethereum, ...beacon, ...ecdsa].map(
-    (n) => {
-      // Use the custom image name if specified
-      if (n.docker.image) return n.docker.image;
-      // Convert implementation to image name
-      const impl = n.implementation.toLocaleLowerCase().replace(/-/g, '');
-      return `${DOCKER_REPO}/${impl}:${n.version}`;
-    },
-  );
+  const { bitcoin, ethereum, electrum, beacon, ecdsa } = network.nodes;
+  const requiredImages = [
+    ...bitcoin,
+    ...ethereum,
+    ...electrum,
+    ...beacon,
+    ...ecdsa,
+  ].map((n) => {
+    // Use the custom image name if specified
+    if (n.docker.image) return n.docker.image;
+    // Convert implementation to image name
+    const impl = n.implementation.toLocaleLowerCase().replace(/-/g, '');
+    return `${DOCKER_REPO}/${impl}:${n.version}`;
+  });
   // Exclude images already pulled
   const missing = requiredImages.filter((i) => !pulled.includes(i));
   // Filter out duplicates
@@ -402,6 +452,64 @@ export const getOpenPorts = async (
     if (openPorts.join() !== existingPorts.join()) {
       openPorts.forEach((port, index) => {
         ports[ethereum[index].name] = { rpc: port };
+      });
+    }
+  }
+
+  // Filter out nodes that are already started since their ports are in use by themselves
+  const electrum = network.nodes.electrum.filter(
+    (n) => n.status !== Status.Started,
+  );
+  if (electrum.length) {
+    let existingPorts = electrum.map((n) => n.ports.tcp);
+    let openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[electrum[index].name] = { tcp: port };
+      });
+    }
+
+    existingPorts = electrum.map((n) => n.ports.ssl);
+    openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[electrum[index].name] = {
+          ...(ports[electrum[index].name] || {}),
+          ssl: port,
+        };
+      });
+    }
+
+    existingPorts = electrum.map((n) => n.ports.ws);
+    openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[electrum[index].name] = {
+          ...(ports[electrum[index].name] || {}),
+          ws: port,
+        };
+      });
+    }
+
+    existingPorts = electrum.map((n) => n.ports.wss);
+    openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[electrum[index].name] = {
+          ...(ports[electrum[index].name] || {}),
+          wss: port,
+        };
+      });
+    }
+
+    existingPorts = electrum.map((n) => n.ports.rpc);
+    openPorts = await getOpenPortRange(existingPorts);
+    if (openPorts.join() !== existingPorts.join()) {
+      openPorts.forEach((port, index) => {
+        ports[electrum[index].name] = {
+          ...(ports[electrum[index].name] || {}),
+          rpc: port,
+        };
       });
     }
   }

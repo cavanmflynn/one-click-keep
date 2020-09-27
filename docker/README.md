@@ -19,6 +19,21 @@ $ docker build --build-arg BITCOIN_VERSION=<version> -t oneclickkeep/bitcoind:<v
 
 Replace `<version>` with the desired bitcoind version (ex: `0.20.1`)
 
+## ElectrumX
+
+### Tags
+
+- `0.20.1` ([electrumx/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/electrumx/Dockerfile))
+
+**Building the image**
+
+```sh
+$ cd electrumx
+$ docker build --build-arg KEEP_NETWORK_ELECTRUMX_COMMIT=<commit_id> -t oneclickkeep/electrumx:<version> .
+```
+
+Replace `<commit_id>` with the desired keep-network/electrumx commit id (ex: `629a609b44af8f0e810ebc67242cc0bf5f3cd1e2`) and  `<version>` with the desired image version (ex: `1.15.0`)
+
 ## Ganache (Ethereum)
 
 ### Tags
@@ -80,6 +95,10 @@ $ docker push oneclickkeep/keep-beacon:<version>
 
 ```sh
 $ docker push oneclickkeep/keep-ecdsa:<version>
+```
+
+```sh
+$ docker push oneclickkeep/electrumx:<version>
 ```
 
 # Out-of-Band Image Updates

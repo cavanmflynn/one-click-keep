@@ -1,4 +1,10 @@
-import { BitcoinNode, EthereumNode, BeaconNode, EcdsaNode } from '@/types';
+import {
+  BitcoinNode,
+  EthereumNode,
+  BeaconNode,
+  EcdsaNode,
+  ElectrumNode,
+} from '@/types';
 import {
   BITCOIN_CREDENTIALS,
   DOCKER_CONFIGS,
@@ -6,12 +12,18 @@ import {
   KEEP_ECDSA_CREDENTIALS,
 } from '../constants';
 import { getContainerName } from './docker-utils';
-import { bitcoind, ganache, keepBeacon, keepEcdsa } from './node-templates';
+import {
+  bitcoind,
+  ganache,
+  keepBeacon,
+  keepEcdsa,
+  electrumx,
+} from './node-templates';
 
 export interface ComposeService {
   image: string;
   container_name: string;
-  environment: Record<string, string>;
+  environment: Record<string, string | number>;
   hostname: string;
   command: string;
   volumes: string[];
@@ -44,7 +56,7 @@ export class ComposeFile {
     // Define the variable substitutions
     const variables = {
       rpcUser: BITCOIN_CREDENTIALS.user,
-      rpcAuth: BITCOIN_CREDENTIALS.rpcauth,
+      rpcPass: BITCOIN_CREDENTIALS.pass,
     };
     // Use the node's custom image or the default for the implementation
     const image =
@@ -74,6 +86,27 @@ export class ComposeFile {
       node.docker.image || `${DOCKER_CONFIGS.ganache.imageName}:${version}`;
     // Add the docker service
     this.content.services[name] = ganache(name, container, image, rpc);
+  }
+
+  addElectrumX(node: ElectrumNode, backend: BitcoinNode) {
+    const { name, version, ports } = node;
+    const { tcp, ssl, ws, wss, rpc } = ports;
+    const container = getContainerName(node);
+    // Use the node's custom image or the default for the implementation
+    const image =
+      node.docker.image || `${DOCKER_CONFIGS.electrumx.imageName}:${version}`;
+    // Add the docker service
+    this.content.services[name] = electrumx(
+      name,
+      container,
+      image,
+      tcp,
+      ssl,
+      ws,
+      wss,
+      rpc,
+      backend,
+    );
   }
 
   addKeepBeacon(node: BeaconNode) {

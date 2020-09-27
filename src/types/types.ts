@@ -28,7 +28,7 @@ export enum Status {
   Error,
 }
 
-export type NodeType = 'bitcoin' | 'ethereum' | 'beacon' | 'ecdsa';
+export type NodeType = 'bitcoin' | 'ethereum' | 'electrum' | 'beacon' | 'ecdsa';
 
 export interface CommonNode {
   id: number;
@@ -65,6 +65,19 @@ export interface EthereumNode extends CommonNode {
   };
 }
 
+export interface ElectrumNode extends CommonNode {
+  type: 'electrum';
+  implementation: 'electrumx';
+  peers: string[];
+  ports: {
+    tcp: number;
+    ssl: number;
+    ws: number;
+    wss: number;
+    rpc: number;
+  };
+}
+
 export interface BeaconNode extends CommonNode {
   type: 'beacon';
   implementation: 'keep-beacon';
@@ -86,6 +99,7 @@ export interface EcdsaNode extends CommonNode {
 export type NodeImplementation =
   | BitcoinNode['implementation']
   | EthereumNode['implementation']
+  | ElectrumNode['implementation']
   | BeaconNode['implementation']
   | EcdsaNode['implementation'];
 
@@ -108,6 +122,7 @@ export interface Network {
   nodes: {
     bitcoin: BitcoinNode[];
     ethereum: EthereumNode[];
+    electrum: ElectrumNode[];
     beacon: BeaconNode[];
     ecdsa: EcdsaNode[];
   };
@@ -175,6 +190,10 @@ export interface OpenPorts {
     zmqBlock?: number;
     zmqTx?: number;
     p2p?: number;
+    tcp?: number;
+    ssl?: number;
+    ws?: number;
+    wss?: number;
   };
 }
 
