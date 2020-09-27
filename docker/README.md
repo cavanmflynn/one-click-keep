@@ -79,6 +79,21 @@ $ docker build --build-arg KEEP_ECDSA_VERSION=<version> -t oneclickkeep/keep-ecd
 
 Replace `<version>` with the desired keep ecdsa version (ex: `1.2.0`)
 
+## tBTC dApp
+
+### Tags
+
+- `0.17.3` ([keep-ecdsa/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/tbtc-dapp/Dockerfile))
+
+**Building the image**
+
+```sh
+$ cd tbtc-dapp
+$ docker build --build-arg TBTC_DAPP_VERSION=<version> -t oneclickkeep/tbtc-dapp:<version> .
+```
+
+Replace `<version>` with the desired tbtc dapp version (ex: `0.17.3`)
+
 **Push to Docker Hub**
 
 ```sh

@@ -1,0 +1,8 @@
+{
+  "1337": {
+    "wsURL": "ws://localhost:8545"
+  },
+  "50": {
+    "wsURL": "ws://localhost:8545"
+  }
+}

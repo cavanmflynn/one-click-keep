@@ -1,0 +1,18 @@
+{
+  "1337": {
+    "bitcoinNetwork": "regtest",
+    "electrum": {
+        "server": "127.0.0.1",
+        "port": 50003,
+        "protocol": "ws"
+    }
+  },
+  "50": {
+    "bitcoinNetwork": "regtest",
+    "electrum": {
+        "server": "127.0.0.1",
+        "port": 50003,
+        "protocol": "ws"
+    }
+  }
+}
