@@ -1,11 +1,16 @@
 import { Component, Vue } from 'vue-property-decorator';
 import WithRender from './network-view.html';
-import { network } from '@/store';
+import { network, system } from '@/store';
 import { getNetworkById } from '@/lib/utils';
 import { Status } from '@/types';
+import { NodeCard } from '../../partials/node-card';
 
 @WithRender
-@Component
+@Component({
+  components: {
+    NodeCard,
+  },
+})
 export default class NetworkView extends Vue {
   public config: {
     [key: number]: {
@@ -45,6 +50,10 @@ export default class NetworkView extends Vue {
     return getNetworkById(network.networks, this.$route.params.id);
   }
 
+  get nodeList() {
+    return Object.values(this.network.nodes).flat();
+  }
+
   get loading() {
     return (
       this.network.status === Status.Starting ||
@@ -62,5 +71,33 @@ export default class NetworkView extends Vue {
 
   public async toggleNetwork() {
     network.toggle(this.network.id);
+  }
+
+  public async deleteNetwork() {
+    this.$confirm({
+      title: this.$lang.translate('NETWORK_DELETE_CONFIRM'),
+      content: () => this.$lang.translate('NETWORK_DELETE_WARNING'),
+      okText: this.$lang.translate('YES'),
+      okType: 'danger',
+      cancelText: this.$lang.translate('CANCEL'),
+      onOk: async () => {
+        try {
+          const { id, name } = this.network;
+          await network.remove(id);
+          system.notify({
+            message: this.$lang.translate('NETWORK_DELETE_SUCCESS', {
+              name,
+            }),
+          });
+          this.$router.replace('/');
+        } catch (error) {
+          system.notify({
+            message: this.$lang.translate('NETWORK_DELETE_FAILED'),
+            error,
+          });
+          throw error;
+        }
+      },
+    });
   }
 }

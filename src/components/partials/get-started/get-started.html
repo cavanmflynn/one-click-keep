@@ -5,7 +5,7 @@
   :style="{ height: '100%', fontSize: '24px', textAlign: 'center', flexDirection: 'column' }"
 >
   <h1>{{ 'LETS_GET_STARTED' | translate }}</h1>
-  <router-link to="network">
+  <router-link :to="{ name: 'new-network' }">
     <a-button type="primary"
       >{{ 'CREATE_A_KEEP_NETWORK' | translate }}</a-button
     >

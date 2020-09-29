@@ -18,6 +18,7 @@ import {
   ethereumService,
   toml,
   keystore,
+  rm,
 } from '@/lib/utils';
 import { system, bitcoind } from '..';
 import { info } from 'electron-log';
@@ -116,6 +117,14 @@ export class NetworkModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  async load() {
+    const { networks } = await docker.loadNetworks();
+    if (networks?.length) {
+      this.setNetworks(networks);
+    }
+  }
+
+  @Action({ rawError: true })
   async add(args: AddNetworkArgs) {
     const nextId = Math.max(0, ...this.networks.map((n) => n.id)) + 1;
     const network = createNetwork({
@@ -129,6 +138,7 @@ export class NetworkModule extends VuexModule {
       keystore.saveKeystoreFiles(network),
     ]);
     this.addNetwork(network);
+    await this.save();
     return network;
   }
 
@@ -198,7 +208,6 @@ export class NetworkModule extends VuexModule {
     await docker.saveNetworks({
       version: APP_VERSION,
       networks: this.networks,
-      // charts: getStoreState().designer.allCharts,
     });
   }
 
@@ -207,11 +216,9 @@ export class NetworkModule extends VuexModule {
     if (!nodes.length) return;
     const id = nodes[0].networkId;
 
-    // const lnNodesOnline: Promise<void>[] = [];
     const btcNodesOnline: Promise<void>[] = [];
     const ethNodesOnline: Promise<void>[] = [];
     for (const node of nodes) {
-      // Wait for lnd nodes to come online before updating their status TODO
       switch (node.type) {
         case 'bitcoin': {
           const btc = node as BitcoinNode;
@@ -264,5 +271,26 @@ export class NetworkModule extends VuexModule {
         }
       }
     }
+  }
+
+  @Action({ rawError: true })
+  async remove(id: string | number) {
+    const network = getNetworkById(this._networks, id);
+    const statuses = [
+      network.status,
+      ...network.nodes.bitcoin.map((n) => n.status),
+      ...network.nodes.ethereum.map((n) => n.status),
+      ...network.nodes.electrum.map((n) => n.status),
+      ...network.nodes.beacon.map((n) => n.status),
+      ...network.nodes.ecdsa.map((n) => n.status),
+    ];
+    if (statuses.find((n) => n !== Status.Stopped)) {
+      await this.stop(id);
+    }
+    await rm(network.path);
+    const newNetworks = this.networks.filter((n) => n.id !== id);
+    this.setNetworks(newNetworks);
+    network.nodes.bitcoin.forEach((n) => bitcoind.removeNode(n.name));
+    await this.save();
   }
 }

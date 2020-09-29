@@ -32,21 +32,21 @@ class DockerService {
     try {
       debug('fetching docker version');
       const dockerVersion = await new Dockerode().version();
-      debug(`Result: ${JSON.stringify(dockerVersion)}`);
       versions.docker = dockerVersion.Version;
+      debug(`docker version: ${versions.docker}`);
     } catch (error) {
       debug(`Failed: ${error.message}`);
       if (throwOnError) throw error;
     }
 
     try {
-      debug('getting docker-compose version');
+      debug('fetching docker-compose version');
       const composeVersion = await this.execute(
         compose.version,
         this.getArgs(),
       );
-      debug(`Result: ${JSON.stringify(composeVersion)}`);
       versions.compose = composeVersion.out.trim();
+      debug(`docker-compose version: ${versions.compose}`);
     } catch (error) {
       debug(`Failed: ${error.message}`);
       if (throwOnError) throw error;
@@ -62,14 +62,13 @@ class DockerService {
     try {
       debug('fetching docker images');
       const allImages = await new Dockerode().listImages();
-      debug(`All Images: ${JSON.stringify(allImages)}`);
       const imageNames = ([] as string[])
         .concat(...allImages.map((i) => i.RepoTags || []))
         .filter((n) => n !== '<none>:<none>'); // ignore untagged images
       const uniqueNames = imageNames.filter(
         (image, index) => imageNames.indexOf(image) === index,
       );
-      debug(`Image Names: ${JSON.stringify(uniqueNames)}`);
+      debug(`finished fetching docker images`);
       return uniqueNames;
     } catch (error) {
       debug(`Failed: ${error.message}`);

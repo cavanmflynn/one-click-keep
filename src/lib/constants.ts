@@ -1,7 +1,5 @@
 import { DockerConfig, NodeImplementation, DockerRepoState } from '@/types';
 import packageJson from '../../package.json';
-import bitcoindLogo from '@/images/ui-icons/bitcoind-logo.svg';
-import ganacheLogo from '@/images/ui-icons/ganache-logo.svg';
 
 // App
 export const APP_VERSION = packageJson.version;
@@ -12,7 +10,6 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   bitcoind: {
     name: 'Bitcoin Core',
     imageName: 'oneclickkeep/bitcoind',
-    logo: bitcoindLogo,
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'bitcoind',
     command: [
@@ -40,7 +37,6 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   btcd: {
     name: 'btcd',
     imageName: '',
-    logo: '',
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'btcd',
     command: '',
@@ -49,7 +45,6 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   ganache: {
     name: 'ganache',
     imageName: 'oneclickkeep/ganache',
-    logo: ganacheLogo,
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'ganache',
     command: '',
@@ -58,7 +53,6 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   electrumx: {
     name: 'ElectrumX',
     imageName: 'oneclickkeep/electrumx',
-    logo: '',
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'electrumx',
     command: '',
@@ -67,7 +61,6 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   'keep-beacon': {
     name: 'KEEP Random Beacon',
     imageName: 'oneclickkeep/keep-beacon',
-    logo: '',
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'keep-beacon',
     command: ['--config', './config/config.toml', 'start'].join('\n  '),
@@ -76,7 +69,6 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   'keep-ecdsa': {
     name: 'KEEP ECDSA',
     imageName: 'oneclickkeep/keep-ecdsa',
-    logo: '',
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'keep-ecdsa',
     command: ['--config', './config/config.toml', 'start'].join('\n  '),

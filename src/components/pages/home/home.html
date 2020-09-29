@@ -5,7 +5,20 @@
     :style="{ fontSize: '40px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#48DBB4' }"
   />
   <template v-else>
-    <GetStarted />
+    <GetStarted v-if="!networks.length" />
+    <a-row :gutter="16" v-else>
+      <a-col
+        v-for="network in networks"
+        :sm="24"
+        :md="12"
+        :lg="8"
+        :xl="6"
+        :xxl="5"
+        :key="network.id"
+      >
+        <NetworkCard :network="network" />
+      </a-col>
+    </a-row>
     <DetectDockerModal />
   </template>
 </div>

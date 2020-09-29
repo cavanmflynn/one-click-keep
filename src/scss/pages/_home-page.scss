@@ -1,5 +1,6 @@
 @include page('home') {
   height: 100%;
+  padding-top: 16px;
 
   &__content {
     height: 50%;

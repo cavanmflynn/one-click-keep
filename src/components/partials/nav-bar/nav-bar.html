@@ -9,4 +9,9 @@
       alt="KEEP"
     />
   </router-link>
+  <router-link :to="{ name: 'new-network' }">
+    <a-button type="link" icon="plus"
+      >{{ 'CREATE_NETWORK' | translate }}</a-button
+    >
+  </router-link>
 </a-layout-header>

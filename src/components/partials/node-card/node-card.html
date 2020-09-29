@@ -1,0 +1,8 @@
+<a-card hoverable>
+  <a-card-meta :title="$options.filters[titleCase](node.name)">
+    <a-avatar
+      slot="avatar"
+      :src="`/assets/images/${node.implementation}-logo.svg`"
+    />
+  </a-card-meta>
+</a-card>

@@ -15,6 +15,8 @@ import { docker } from '@/lib/docker/docker-service';
 import { notification } from 'ant-design-vue';
 import { warn } from 'electron-log';
 import { DEFAULT_REPO_STATE } from '@/lib/constants';
+import { network, bitcoind } from '..';
+import router from '../../router';
 
 @Module({ store, name: 'system', dynamic: true, namespaced: true })
 export class SystemModule extends VuexModule {
@@ -75,6 +77,7 @@ export class SystemModule extends VuexModule {
 
   @Action({ rawError: true })
   public async initialize() {
+    await network.load();
     await this.getDockerVersions(false);
     await this.getDockerImages();
     this.setInitialized(true);
@@ -107,5 +110,16 @@ export class SystemModule extends VuexModule {
         description: description ?? '',
       });
     }
+  }
+
+  @Action({ rawError: true })
+  public navigateToNetwork(id: string | number) {
+    bitcoind.clearNodes();
+    router.push({
+      name: 'network-view',
+      params: {
+        id: id.toString(),
+      },
+    });
   }
 }

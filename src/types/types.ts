@@ -16,6 +16,10 @@ export interface NotificationConfig {
   error?: Error;
 }
 
+export interface BadgeStatus {
+  [key: number]: 'success' | 'processing' | 'default' | 'error' | 'warning';
+}
+
 //#endregion
 
 //#region Node
@@ -131,7 +135,6 @@ export interface Network {
 export interface NetworksFile {
   version: string;
   networks: Network[];
-  // charts: Record<number, IChart>; TODO
 }
 
 /**
@@ -155,7 +158,6 @@ export type Platform = SupportedPlatform | 'unknown';
 export interface DockerConfig {
   name: string;
   imageName: string;
-  logo: string;
   platforms: SupportedPlatform[];
   volumeDirName: string;
   command: string;

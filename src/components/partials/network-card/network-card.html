@@ -1,0 +1,22 @@
+<a-card :title="network.name" @click="navigateToNetwork" hoverable>
+  <a-tooltip
+    :title="network.status | statusName | uppercase | translate"
+    slot="extra"
+  >
+    <a-badge :status="badgeStatuses[network.status]" />
+  </a-tooltip>
+  <a-row>
+    <a-col :span="12">
+      <a-statistic
+        :title="'RANDOM_BEACON_NODES' | translate"
+        :value="network.nodes.beacon.length"
+      />
+    </a-col>
+    <a-col :span="12">
+      <a-statistic
+        :title="'ECDSA_SIGNING_NODES' | translate"
+        :value="network.nodes.ecdsa.length"
+      />
+    </a-col>
+  </a-row>
+</a-card>

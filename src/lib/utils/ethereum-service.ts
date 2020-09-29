@@ -1,6 +1,7 @@
 import { providers } from 'ethers';
 import { EthereumNode } from '@/types';
 import { waitFor } from './async';
+import { range } from './numbers';
 
 class EthereumService {
   createClient(node: EthereumNode) {
@@ -27,6 +28,17 @@ class EthereumService {
       interval,
       timeout,
     );
+  }
+
+  async mine(numBlocks: number, node: EthereumNode) {
+    const client = this.createClient(node);
+    // Ganache only supports mining of a single block and ethers does not support batch requests
+    return Promise.all(range(numBlocks).map(() => client.send('evm_mine', [])));
+  }
+
+  async increaseTime(increaseSeconds: number, node: EthereumNode) {
+    const client = this.createClient(node);
+    return client.send('evm_increaseTime', [increaseSeconds]);
   }
 }
 

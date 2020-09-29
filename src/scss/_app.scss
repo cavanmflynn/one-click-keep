@@ -3,10 +3,74 @@ html,
 body {
   padding: 0;
   margin: 0;
+  background: $off-black;
 }
 
 // General App Styles
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+// Ant Design Overrides
+.ant-tag {
+  &-blue {
+    color: #177ddc;
+    background: #111d2c;
+    border-color: #15395b;
+  }
+
+  &-green {
+    color: #49aa19;
+    background: #162312;
+    border-color: #274916;
+  }
+
+  &-red {
+    color: #d32029;
+    background: #2a1215;
+    border-color: #58181c;
+  }
+
+  &-gray {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.ant-statistic-title {
+  color: $gray;
+}
+
+.ant-card-meta-title {
+  margin-top: 4px;
+}
+
+.ant-btn-background-ghost {
+  color: $gray;
+  border-color: $gray;
+}
+
+.ant-dropdown-menu {
+  background: $dark-gray;
+
+  &-item {
+    color: $gray;
+  
+    &:hover {
+      color: $white;
+    }
+  }
+}
+
+.ant-page-header-heading {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: $component-bg;
+  border: 1px solid $component-border;
+  border-radius: 2px;
+
+  &-extra {
+    margin-left: auto;
+  }
 }

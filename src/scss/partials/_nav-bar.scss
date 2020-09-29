@@ -1,4 +1,8 @@
 @include partial('nav-bar') {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   &__logo {
     height: 32px;
   }

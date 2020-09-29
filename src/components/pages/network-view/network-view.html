@@ -1,6 +1,15 @@
 <div class="page/network-view">
-  <a-page-header :title="network.name" @back="() => $router.push('/')">
-    <template slot="extra">
+  <a-page-header
+    :title="network.name"
+    class="page/network-view__header"
+    @back="() => $router.push('/')"
+  >
+    <template slot="tags">
+      <a-tag :class="`ant-tag-${$options.filters.statusColor(network.status)}`"
+        >{{ network.status | statusName }}</a-tag
+      >
+    </template>
+    <div slot="extra" class="page/network-view__extra">
       <a-button
         :type="button.type"
         :icon="button.icon"
@@ -10,6 +19,37 @@
       >
         {{ button.label }}
       </a-button>
-    </template>
+      <a-dropdown key="options">
+        <a-button
+          class="page/network-view__extra__options-button"
+          icon="more"
+          @click="e => e.preventDefault()"
+          ghost
+        />
+        <a-menu slot="overlay">
+          <a-menu-item key="delete" @click="deleteNetwork">
+            <a-icon type="close" />
+            {{ 'DELETE' | translate }}
+          </a-menu-item>
+        </a-menu>
+      </a-dropdown>
+    </div>
   </a-page-header>
+  <div class="page/network-view__nodes">
+    <a-row :gutter="[16,16]" :style="{ marginBottom: '38px' }">
+      <a-col
+        v-for="(node, index) in nodeList"
+        :key="index"
+        :sm="24"
+        :md="12"
+        :lg="8"
+        :xl="6"
+      >
+        <NodeCard
+          :node="node"
+          :titleCase="node.type === 'ecdsa' ? 'uppercase' : undefined"
+        ></NodeCard>
+      </a-col>
+    </a-row>
+  </div>
 </div>

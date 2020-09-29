@@ -24,5 +24,25 @@
       "networkId": null
     }
   },
-  "BITCOIND_MINE_ERROR": "The number of blocks to mine must be a positive number"
+  "BITCOIND_MINE_ERROR": "The number of blocks to mine must be a positive number",
+
+  "RANDOM_BEACON_NODES": "Beacon Nodes",
+  "ECDSA_SIGNING_NODES": "Signing Nodes",
+  "STARTING": "Starting",
+  "STARTED": "Started",
+  "STOPPING": "Stopping",
+  "STOPPED": "Stopped",
+  "ERROR": "Error",
+  "DELETE": "Delete",
+  "NETWORK_DELETE_CONFIRM": "Are you sure you want to delete this network?",
+  "NETWORK_DELETE_WARNING": "All of the network data will be permanently removed.",
+  "NETWORK_DELETE_SUCCESS": {
+    "template": "The network '%name' and its data has been deleted!",
+    "required": {
+      "name": null
+    }
+  },
+  "NETWORK_DELETE_FAILED": "Unable to delete the networkUnable to delete the network",
+  "YES": "Yes",
+  "CANCEL": "Cancel"
 }

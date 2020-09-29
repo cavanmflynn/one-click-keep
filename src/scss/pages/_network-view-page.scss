@@ -1,2 +1,23 @@
 @include page('network-view') {
+  &__header {
+    padding: 16px 0;
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    z-index: 1;
+  }
+
+  &__extra {
+    display: flex;
+    align-items: center;
+
+    &__options-button {
+      margin-left: 8px;
+    }
+  }
+
+  &__nodes {
+    overflow: auto;
+    padding-top: 104px;
+  }
 }

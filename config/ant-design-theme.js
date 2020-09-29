@@ -14,8 +14,8 @@ module.exports = {
   'input-bg': '#22201E',
   'select-background': '#22201E',
   'border-radius-base': '2px',
-  'border-color-base': '#22201E',
-  'border-color-split': '#22201E',
+  'border-color-base': '#333333',
+  'border-color-split': '#333333',
   'border-color-inverse': '#22201E',
   'tag-default-bg': '#3A3A3A',
   'btn-height-base': '40px',
@@ -33,4 +33,5 @@ module.exports = {
   'table-header-bg': '#141414',
   'table-expanded-row-bg': 'transparent',
   'page-header-back-color': '#5A5A5A',
+  'item-hover-bg': '#22201E',
 };

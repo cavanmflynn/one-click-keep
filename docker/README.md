@@ -94,6 +94,21 @@ $ docker build --build-arg TBTC_DAPP_VERSION=<version> -t oneclickkeep/tbtc-dapp
 
 Replace `<version>` with the desired tbtc dapp version (ex: `0.17.3`)
 
+## KEEP Dashboard
+
+### Tags
+
+- `1.3.3` ([keep-ecdsa/Dockerfile](https://github.com/cavanmflynn/one-click-keep/blob/master/docker/keep-dashboard/Dockerfile))
+
+**Building the image**
+
+```sh
+$ cd keep-dashboard
+$ docker build --build-arg KEEP_DASHBOARD_VERSION=<version> -t oneclickkeep/keep-dashboard:<version> .
+```
+
+Replace `<version>` with the desired keep dashboard version (ex: `1.3.3`)
+
 **Push to Docker Hub**
 
 ```sh
@@ -116,6 +131,14 @@ $ docker push oneclickkeep/keep-ecdsa:<version>
 $ docker push oneclickkeep/electrumx:<version>
 ```
 
+```sh
+$ docker push oneclickkeep/tbtc-dapp:<version>
+```
+
+```sh
+$ docker push oneclickkeep/keep-dashboard:<version>
+```
+
 # Out-of-Band Image Updates
 
 > Note: These steps can only be performed by developers with commit access to this GitHub repo and push access to the Docker Hub repo
@@ -131,11 +154,3 @@ To make new docker image versions available:
    - update the `latest` property of the implementation if necessary
    - increment the root-level `version` number by `1`
 4. Update the [`src/lib/constants.ts`](https://github.com/cavanmflynn/one-click-keep/blob/master/src/utils/constants.ts) file
-
-Once the updated `nodes.json` file is committed to master, the new images can be used in one-click keep by following these steps:
-
-1. Create a Network or view an existing Network
-2. In the Network Designer sidebar, click on the **Show All Versions** toggle
-3. At the bottom of the node list, click on the **Check for new Node Versions** link
-4. A dialog will open displaying the new versions available
-5. Click the **Add New Versions** button to begin using them

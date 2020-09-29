@@ -8,5 +8,6 @@ export * from './keep';
 export * from './keystore';
 export * from './keystore-service';
 export * from './network';
+export * from './numbers';
 export * from './system';
 export * from './toml-service';
