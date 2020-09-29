@@ -1,6 +1,8 @@
 # One-Click KEEP
 
-One-click KEEP and tBTC setup for local app development & testing.
+> One-click KEEP and tBTC setup for local app development & testing.
+
+<img width="800" src="https://user-images.githubusercontent.com/20102664/94516832-f2f0bf80-01e3-11eb-9f9c-0db037a9b505.png">
 
 ## Getting Started
 
