@@ -1,10 +1,28 @@
 # One-Click KEEP
 
-> One-click KEEP and tBTC setup for local app development & testing.
+> One-click KEEP and tBTC setup for local app development & testing
 
 <img width="800" src="https://user-images.githubusercontent.com/20102664/94516832-f2f0bf80-01e3-11eb-9f9c-0db037a9b505.png">
 
-## Getting Started
+## Purpose
+
+One-Click Keep was built to help [KEEP Network](https://keep.network/) application developers quickly spin up one or more networks locally on their computers.
+
+With One-Click KEEP you can:
+
+* Spin up the 5 different types required for tBTC development on the KEEP Network:
+    * Bitcoin (1)
+    * Ethereum (1)
+    * Electrum (1)
+    * KEEP ECDSA Node (Up to 9)
+    * KEEP Random Beacon Node (Up to 9)
+* Open the KEEP Dashboard and tBTC dApp with one-click and interact with the network
+* Manually mine new blocks
+* Launch a terminal in each node
+* View streaming logs from each node
+* Connect from your app to the network via RPC
+
+## Development
 
 ### Project setup
 ```
