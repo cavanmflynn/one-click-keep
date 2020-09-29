@@ -6,7 +6,7 @@
 
 ## Purpose
 
-One-Click Keep was built to help [KEEP Network](https://keep.network/) application developers quickly spin up one or more networks locally on their computers.
+One-Click KEEP was built to help [KEEP Network](https://keep.network/) application developers quickly spin up one or more networks locally on their computers.
 
 With One-Click KEEP you can:
 
