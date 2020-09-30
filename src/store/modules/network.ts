@@ -20,7 +20,7 @@ import {
   keystore,
   rm,
 } from '@/lib/utils';
-import { system, bitcoind } from '..';
+import { system, bitcoind, ethereum } from '..';
 import { info } from 'electron-log';
 import { APP_VERSION } from '@/lib/constants';
 
@@ -249,6 +249,7 @@ export class NetworkModule extends VuexModule {
             .waitUntilOnline(eth)
             .then(async () => {
               this.setStatus({ id, status: Status.Started, only: eth.name });
+              await ethereum.getInfo(eth);
             })
             .catch((error) =>
               this.setStatus({
@@ -259,6 +260,10 @@ export class NetworkModule extends VuexModule {
               }),
             );
           ethNodesOnline.push(promise);
+          break;
+        }
+        case 'electrum': {
+          // TODO
           break;
         }
         case 'beacon': {

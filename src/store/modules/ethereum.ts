@@ -1,15 +1,15 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators';
 import { store } from '../store';
-import { Status, BitcoinNode, BitcoindNodeInfo } from '@/types';
-import { getNetworkById, delay, bitcoindService } from '@/lib/utils';
+import { Status, EthereumNodeInfo, EthereumNode } from '@/types';
+import { getNetworkById, delay, ethereumService } from '@/lib/utils';
 import { system, network } from '..';
 import { languageLibrary } from '@/localization';
-import { ChainInfo, WalletInfo } from 'bitcoin-core';
 import Vue from 'vue';
+import { info } from 'electron-log';
 
-@Module({ store, name: 'bitcoind', dynamic: true, namespaced: true })
-export class BitcoindModule extends VuexModule {
-  private _nodes: Record<string, BitcoindNodeInfo> = {};
+@Module({ store, name: 'ethereum', dynamic: true, namespaced: true })
+export class EthereumModule extends VuexModule {
+  private _nodes: Record<string, EthereumNodeInfo> = {};
 
   get nodes() {
     return this._nodes;
@@ -28,41 +28,38 @@ export class BitcoindModule extends VuexModule {
   @Mutation
   public setInfo({
     node,
-    chainInfo,
-    walletInfo,
+    blockHeight,
   }: {
-    node: BitcoinNode;
-    chainInfo: ChainInfo;
-    walletInfo: WalletInfo;
+    node: EthereumNode;
+    blockHeight: number;
   }) {
     if (!this._nodes[node.name]) {
       Vue.set(this._nodes, node.name, {});
     }
-    Vue.set(this._nodes[node.name], 'chainInfo', chainInfo);
-    Vue.set(this._nodes[node.name], 'walletInfo', walletInfo);
+    info(this._nodes[node.name], 'blockHeight', blockHeight);
+    Vue.set(this._nodes[node.name], 'blockHeight', blockHeight);
   }
 
   @Action({ rawError: true })
-  async getInfo(node: BitcoinNode) {
-    const chainInfo = await bitcoindService.getBlockchainInfo(node);
-    const walletInfo = await bitcoindService.getWalletInfo(node);
-    this.setInfo({ node, chainInfo, walletInfo });
+  async getInfo(node: EthereumNode) {
+    const blockHeight = await ethereumService.getBlockHeight(node);
+    this.setInfo({ node, blockHeight });
   }
 
   @Action({ rawError: true })
-  async mine({ blocks, node }: { blocks: number; node: BitcoinNode }) {
+  async mine({ blocks, node }: { blocks: number; node: EthereumNode }) {
     if (blocks < 0)
       throw new Error(
         languageLibrary[system.language || 'en'].get('MINE_ERROR').toString({}),
       );
 
-    await bitcoindService.mine(blocks, node);
+    await ethereumService.mine(blocks, node);
     // Add a small delay to allow the block to propagate to all nodes
     await delay(1000);
-    // Update info for all bitcoin nodes
+    // Update info for all ethereum nodes
     const net = getNetworkById(network.networks, node.networkId);
     await Promise.all(
-      net.nodes.bitcoin
+      net.nodes.ethereum
         .filter((n) => n.status === Status.Started)
         .map(this.getInfo),
     );

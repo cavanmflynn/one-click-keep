@@ -9,7 +9,11 @@ class EthereumService {
   }
 
   async getLatestBlock(node: EthereumNode) {
-    return await this.createClient(node).getBlock('latest');
+    return this.createClient(node).getBlock('latest');
+  }
+
+  async getBlockHeight(node: EthereumNode) {
+    return this.createClient(node).getBlockNumber();
   }
 
   /**

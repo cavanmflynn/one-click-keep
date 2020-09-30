@@ -17,10 +17,19 @@
           >{{ $options.filters[titleCase](node.name) }}</span
         >
       </div>
-      <a-tag>{{ node.implementation }}</a-tag>
+      <a-tag class="partial/node-drawer__header__tag"
+        >{{ node.implementation }}</a-tag
+      >
     </div>
     <a-divider class="partial/node-drawer__divider" />
     <template v-if="node.type === 'bitcoin'">
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Block Height</a-col>
+        <a-col :span="14" style="text-align: right">
+          {{ bitcoinBlockHeight }}
+        </a-col>
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
       <a-row :gutter="16">
         <a-col :span="8"
           ><a-input-number
@@ -72,6 +81,13 @@
       </a-row>
     </template>
     <template v-if="node.type === 'ethereum'">
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Block Height</a-col>
+        <a-col :span="14" style="text-align: right">
+          {{ ethereumBlockHeight }}
+        </a-col>
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
       <a-row :gutter="16">
         <a-col :span="8"
           ><a-input-number

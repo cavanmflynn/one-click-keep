@@ -6,12 +6,9 @@ import {
   BITCOIN_CREDENTIALS,
   ETHEREUM_ACCOUNTS,
   getContainerName,
-  ethereumService,
-  delay,
-  bitcoindService,
   CONTRACT_ARTIFACTS_URL,
 } from '@/lib';
-import { system } from '@/store';
+import { system, bitcoind, ethereum } from '@/store';
 
 @WithRender
 @Component({
@@ -40,8 +37,16 @@ export class NodeDrawer extends Vue {
     return BITCOIN_CREDENTIALS;
   }
 
+  get bitcoinBlockHeight() {
+    return bitcoind.nodes[this.node.name]?.chainInfo?.blocks ?? 'Unknown';
+  }
+
   get ethereumAccounts() {
     return ETHEREUM_ACCOUNTS;
+  }
+
+  get ethereumBlockHeight() {
+    return ethereum.nodes[this.node.name]?.blockHeight ?? 'Unknown';
   }
 
   public async openContainerLogs() {
@@ -56,10 +61,10 @@ export class NodeDrawer extends Vue {
   public async mineEthereumBlocks(node: EthereumNode) {
     try {
       this.ethereumMining = true;
-      await Promise.all([
-        ethereumService.mine(this.ethereumMineBlockCount, node),
-        delay(1000),
-      ]);
+      await ethereum.mine({
+        node,
+        blocks: this.ethereumMineBlockCount,
+      });
     } catch (error) {
       system.notify({ message: 'Ethereum block mining failed', error });
     } finally {
@@ -70,10 +75,10 @@ export class NodeDrawer extends Vue {
   public async mineBitcoinBlocks(node: BitcoinNode) {
     try {
       this.bitcoinMining = true;
-      await Promise.all([
-        bitcoindService.mine(this.bitcoinMineBlockCount, node),
-        delay(1000),
-      ]);
+      await bitcoind.mine({
+        node,
+        blocks: this.bitcoinMineBlockCount,
+      });
     } catch (error) {
       system.notify({ message: 'Bitcoin block mining failed', error });
     } finally {

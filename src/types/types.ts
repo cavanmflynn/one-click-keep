@@ -1,4 +1,5 @@
 import { LANGUAGE_TO_LOCALE, languageLibrary } from '@/localization';
+import { ChainInfo, WalletInfo } from 'bitcoin-core';
 
 //#region Localization
 
@@ -106,6 +107,15 @@ export type NodeImplementation =
   | ElectrumNode['implementation']
   | BeaconNode['implementation']
   | EcdsaNode['implementation'];
+
+export interface EthereumNodeInfo {
+  blockHeight?: number;
+}
+
+export interface BitcoindNodeInfo {
+  chainInfo?: ChainInfo;
+  walletInfo?: WalletInfo;
+}
 
 export interface AddNetworkArgs {
   name: string;
