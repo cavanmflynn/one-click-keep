@@ -139,4 +139,9 @@ export class SystemModule extends VuexModule {
   public async openWindow(url: string) {
     await this.ipcSender(IPC_CHANNELS.OPEN_WINDOW, { url });
   }
+
+  @Action({ rawError: true })
+  public async downloadFile(url: string) {
+    await this.ipcSender(IPC_CHANNELS.DOWNLOAD_FILE, { url });
+  }
 }

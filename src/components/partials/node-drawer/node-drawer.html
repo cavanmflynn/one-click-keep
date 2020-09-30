@@ -107,7 +107,10 @@
           <CopyButton :displayText="account | shorten" :copyText="account" />
         </a-col>
       </a-row>
-      <!-- TODO: Download artifacts -->
+      <a-divider class="partial/node-drawer__divider" />
+      <a-button type="primary" @click="downloadContractArtifacts" block ghost
+        >Download Contract Artifacts
+      </a-button>
     </template>
     <template v-if="node.type === 'electrum'">
       <a-row class="partial/node-drawer__row">
@@ -153,7 +156,7 @@
         >
       </a-row>
     </template>
-    <a-divider />
+    <a-divider class="partial/node-drawer__divider" />
     <a-button type="primary" @click="openContainerLogs" block ghost
       >View Docker Logs
     </a-button>

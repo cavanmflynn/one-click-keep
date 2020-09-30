@@ -144,6 +144,7 @@ export const BASE_PORTS: Record<NodeImplementation, Record<string, number>> = {
 // Electron
 export const IPC_CHANNELS = {
   OPEN_WINDOW: 'open-window',
+  DOWNLOAD_FILE: 'download-file',
 };
 
 // Bitcoin
@@ -231,6 +232,8 @@ export const ETHEREUM_KEYSTORES = [
   { address: '7457d5e02197480db681d3fdf256c7aca21bdc12', id: '25ef6bdd-31c0-48e9-a588-25cbcd55f2be' , version: 3, Crypto: { cipher: 'aes-128-ctr', cipherparams: { iv: 'c44b5fecbc3fb74615e691676816567e' }, ciphertext: '25d670f2c5a8ac719d95f48472e9620ef9b6d50710516c260ceeb2553985d704', kdf: 'scrypt', kdfparams: { salt: 'ba6a74c4cab4d192e09378aeb4c7cad7232bcaf309db1dd1475948b3b729aa7a', n: 131072, dklen: 32, p: 1, r: 8 }, mac: 'e6c8c5e79b07f0edef4c04004eb5ce71d2abc92032fb19936fafb24784e3dfa4' }},
   { address: '91c987bf62d25945db517bdaa840a6c661374402', id: '15146bc2-e2ef-41e8-9c11-126a69b5013e' , version: 3, Crypto: { cipher: 'aes-128-ctr', cipherparams: { iv: '5f7a9cfc1374d7b105ac16171ee090c5' }, ciphertext: 'e59e09feb2d20ff75d726dea9f0235847cd0ad3bab714d6fec0ed614b74f0954', kdf: 'scrypt', kdfparams: { salt: '6ee91bec73020d72f033c5bd97b7cad7dbd95af9a7aeae86d7684a5177f17df7', n: 131072, dklen: 32, p: 1, r: 8 }, mac: '0a33a624101e0449921c5275590e3180f9e539ad9aa0f45eb70e4666306241d0' }},
 ];
+export const CONTRACT_ARTIFACTS_VERSION = 'v1.1.0';
+export const CONTRACT_ARTIFACTS_URL = `https://contract-artifacts.s3.us-east-2.amazonaws.com/contract-artifacts-${CONTRACT_ARTIFACTS_VERSION}.zip`;
 
 // Contracts
 // prettier-ignore

@@ -9,6 +9,7 @@ import {
   ethereumService,
   delay,
   bitcoindService,
+  CONTRACT_ARTIFACTS_URL,
 } from '@/lib';
 import { system } from '@/store';
 
@@ -46,6 +47,10 @@ export class NodeDrawer extends Vue {
   public async openContainerLogs() {
     const url = `logs/${getContainerName(this.node)}`;
     await system.openWindow(url);
+  }
+
+  public async downloadContractArtifacts() {
+    await system.downloadFile(CONTRACT_ARTIFACTS_URL);
   }
 
   public async mineEthereumBlocks(node: EthereumNode) {

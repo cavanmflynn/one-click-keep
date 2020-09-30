@@ -2,9 +2,11 @@ import { BrowserWindow, IpcMain } from 'electron';
 import { debug } from 'electron-log';
 import windowState from 'electron-window-state';
 import { BASE_URL } from './constants';
+import { download } from 'electron-dl';
 
 const IPC_CHANNELS = {
   OPEN_WINDOW: 'open-window',
+  DOWNLOAD_FILE: 'download-file',
 };
 
 const openWindow = async (args: { url: string }): Promise<boolean> => {
@@ -40,6 +42,11 @@ const openWindow = async (args: { url: string }): Promise<boolean> => {
   return true;
 };
 
+const downloadFile = async (args: { url: string }) => {
+  const win = BrowserWindow.getFocusedWindow();
+  await download(win!, args.url);
+};
+
 /**
  * A mapping of electron IPC channel names to the functions to execute when
  * messages are received
@@ -48,6 +55,7 @@ const listeners: {
   [key: string]: (...args: any) => Promise<any>;
 } = {
   [IPC_CHANNELS.OPEN_WINDOW]: openWindow,
+  [IPC_CHANNELS.DOWNLOAD_FILE]: downloadFile,
 };
 
 /**
