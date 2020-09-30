@@ -1,3 +1,4 @@
+const { join } = require('path');
 const antDesignTheme = require('./config/ant-design-theme');
 
 module.exports = {
@@ -26,6 +27,7 @@ module.exports = {
     resolve: {
       alias: {
         vue$: 'vue/dist/vue.common',
+        ws: join(__dirname, 'node_modules/ws/index.js'), // https://github.com/websockets/ws/issues/1538
       },
     },
     optimization: {

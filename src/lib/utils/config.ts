@@ -6,7 +6,9 @@ import { DOCKER_CONFIGS } from '../constants';
 /**
  * Root path where application data is stored
  */
-export const dataPath = join(remote.app.getPath('home'), '.one-click-keep');
+export const dataPath = remote
+  ? join(remote.app.getPath('home'), '.one-click-keep')
+  : '';
 
 /**
  * Path where networks data is stored

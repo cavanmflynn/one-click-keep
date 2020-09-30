@@ -141,6 +141,11 @@ export const BASE_PORTS: Record<NodeImplementation, Record<string, number>> = {
   },
 };
 
+// Electron
+export const IPC_CHANNELS = {
+  OPEN_WINDOW: 'open-window',
+};
+
 // Bitcoin
 export const BITCOIN_CREDENTIALS = {
   user: 'keepuser',

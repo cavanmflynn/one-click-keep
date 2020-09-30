@@ -22,6 +22,7 @@ import {
   Statistic,
   Tooltip,
   Dropdown,
+  Drawer,
 } from 'ant-design-vue';
 import Vue from 'vue';
 
@@ -31,6 +32,7 @@ Vue.use(Button);
 Vue.use(Card);
 Vue.use(Col);
 Vue.use(Divider);
+Vue.use(Drawer);
 Vue.use(Dropdown);
 Vue.use(Form);
 Vue.use(Icon);

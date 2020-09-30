@@ -1,0 +1,12 @@
+<div
+  :style="{ fontSize, float: 'right', display: 'flex', alignItems: 'center', height: '24px' }"
+>
+  <span v-if="showText">{{ displayText || copyText }}</span
+  ><a-icon
+    type="file"
+    :style="{ cursor: 'pointer', paddingLeft: '4px' }"
+    v-clipboard:copy="copyText"
+    v-clipboard:success="onCopy"
+    v-clipboard:error="onError"
+  />
+</div>

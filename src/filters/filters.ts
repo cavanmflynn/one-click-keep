@@ -70,3 +70,14 @@ Vue.filter('statusColor', (status: Status) => {
 Vue.filter('ethereumAddress', (index: string | number) => {
   return ETHEREUM_ACCOUNTS[index];
 });
+
+/**
+ * Convert address to shorten address
+ */
+Vue.filter('shorten', (value: string) => {
+  if (!value) {
+    return '';
+  }
+  const val = String(value);
+  return val.length > 16 ? `${val.slice(0, 8)}...${val.slice(-6)}` : val;
+});

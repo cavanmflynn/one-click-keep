@@ -6,7 +6,7 @@
   />
   <template v-else>
     <GetStarted v-if="!networks.length" />
-    <a-row :gutter="16" v-else>
+    <a-row :gutter="[16,16]" v-else>
       <a-col
         v-for="network in networks"
         :sm="24"

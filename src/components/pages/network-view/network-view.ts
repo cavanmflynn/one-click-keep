@@ -2,16 +2,19 @@ import { Component, Vue } from 'vue-property-decorator';
 import WithRender from './network-view.html';
 import { network, system } from '@/store';
 import { getNetworkById } from '@/lib/utils';
-import { Status } from '@/types';
+import { Status, CommonNode } from '@/types';
 import { NodeCard } from '../../partials/node-card';
+import { NodeDrawer } from '../../partials/node-drawer';
 
 @WithRender
 @Component({
   components: {
     NodeCard,
+    NodeDrawer,
   },
 })
 export default class NetworkView extends Vue {
+  public selectedNode: CommonNode | null = null;
   public config: {
     [key: number]: {
       label: string;
@@ -99,5 +102,13 @@ export default class NetworkView extends Vue {
         }
       },
     });
+  }
+
+  public onNodeSelected(node: CommonNode) {
+    this.selectedNode = node;
+  }
+
+  public onNodeDrawerClosed() {
+    this.selectedNode = null;
   }
 }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './components/pages/home';
+import Logs from './components/pages/logs';
 
 Vue.use(Router);
 
@@ -28,6 +29,11 @@ export default new Router({
         import(
           /* webpackChunkName: "network-view" */ './components/pages/network-view'
         ),
+    },
+    {
+      path: '/logs/:name',
+      name: 'logs',
+      component: Logs,
     },
   ],
 });

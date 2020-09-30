@@ -14,9 +14,10 @@ import { store } from '../store';
 import { docker } from '@/lib/docker/docker-service';
 import { notification } from 'ant-design-vue';
 import { warn } from 'electron-log';
-import { DEFAULT_REPO_STATE } from '@/lib/constants';
+import { DEFAULT_REPO_STATE, IPC_CHANNELS } from '@/lib/constants';
 import { network, bitcoind } from '..';
 import router from '../../router';
+import { IpcSender, createIpcSender } from '@/lib';
 
 @Module({ store, name: 'system', dynamic: true, namespaced: true })
 export class SystemModule extends VuexModule {
@@ -28,6 +29,7 @@ export class SystemModule extends VuexModule {
   };
   private _dockerImages: string[] = [];
   private _dockerRepoState: DockerRepoState = DEFAULT_REPO_STATE;
+  private _ipcSender: IpcSender;
 
   public get initialized() {
     return this._initialized;
@@ -47,6 +49,10 @@ export class SystemModule extends VuexModule {
 
   public get dockerRepoState() {
     return this._dockerRepoState;
+  }
+
+  public get ipcSender() {
+    return this._ipcSender;
   }
 
   @Mutation
@@ -75,11 +81,17 @@ export class SystemModule extends VuexModule {
     this._dockerRepoState = dockerRepoState;
   }
 
+  @Mutation
+  public setIpcSender(ipcSender: IpcSender) {
+    this._ipcSender = ipcSender;
+  }
+
   @Action({ rawError: true })
   public async initialize() {
     await network.load();
     await this.getDockerVersions(false);
     await this.getDockerImages();
+    this.setIpcSender(createIpcSender('SystemModule', 'app'));
     this.setInitialized(true);
   }
 
@@ -121,5 +133,10 @@ export class SystemModule extends VuexModule {
         id: id.toString(),
       },
     });
+  }
+
+  @Action({ rawError: true })
+  public async openWindow(url: string) {
+    await this.ipcSender(IPC_CHANNELS.OPEN_WINDOW, { url });
   }
 }

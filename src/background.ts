@@ -1,9 +1,10 @@
 'use strict';
 
-import { app, BrowserWindow, protocol } from 'electron';
+import { app, BrowserWindow, protocol, ipcMain } from 'electron';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import { sync } from 'shell-env';
+import { initAppIpcListener } from './electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -82,6 +83,7 @@ app.on('ready', async () => {
     }
   }
   createWindow();
+  initAppIpcListener(ipcMain);
 });
 
 // Exit cleanly on request from parent process in development mode.

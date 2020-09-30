@@ -1,0 +1,161 @@
+<a-drawer
+  width="340"
+  placement="right"
+  :closable="false"
+  :visible="!!node"
+  @close="onClose"
+  class="partial/node-drawer"
+>
+  <div v-if="node">
+    <div class="partial/node-drawer__header">
+      <div>
+        <a-avatar
+          slot="avatar"
+          :src="`/assets/images/${node.implementation}-logo.svg`"
+        />
+        <span class="partial/node-drawer__header__title"
+          >{{ $options.filters[titleCase](node.name) }}</span
+        >
+      </div>
+      <a-tag>{{ node.implementation }}</a-tag>
+    </div>
+    <a-divider class="partial/node-drawer__divider" />
+    <template v-if="node.type === 'bitcoin'">
+      <a-row :gutter="16">
+        <a-col :span="8"
+          ><a-input-number
+            :min="1"
+            :max="10000"
+            v-model="bitcoinMineBlockCount"
+        /></a-col>
+        <a-col :span="16"
+          ><a-button
+            type="primary"
+            @click="() => mineBitcoinBlocks(node)"
+            :loading="bitcoinMining"
+            ghost
+            block
+            >Mine Blocks</a-button
+          ></a-col
+        >
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">RPC Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`http://localhost:${node.ports.rpc}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">ZMQ Block Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`tcp://localhost:${node.ports.zmqBlock}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">ZMQ Tx Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`tcp://localhost:${node.ports.zmqTx}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Username</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="bitcoinCredentials.user"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Password</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="bitcoinCredentials.pass"
+        /></a-col>
+      </a-row>
+    </template>
+    <template v-if="node.type === 'ethereum'">
+      <a-row :gutter="16">
+        <a-col :span="8"
+          ><a-input-number
+            :min="1"
+            :max="10000"
+            v-model="ethereumMineBlockCount"
+        /></a-col>
+        <a-col :span="16"
+          ><a-button
+            type="primary"
+            @click="() => mineEthereumBlocks(node)"
+            :loading="ethereumMining"
+            ghost
+            block
+            >Mine Blocks</a-button
+          ></a-col
+        >
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">RPC Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`http://localhost:${node.ports.rpc}`"
+        /></a-col>
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
+      <a-row
+        v-for="(account, i) in ethereumAccounts"
+        class="partial/node-drawer__row"
+      >
+        <a-col :span="10">Account {{ i + 1 }}</a-col>
+        <a-col :span="14">
+          <CopyButton :displayText="account | shorten" :copyText="account" />
+        </a-col>
+      </a-row>
+      <!-- TODO: Download artifacts -->
+    </template>
+    <template v-if="node.type === 'electrum'">
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">TCP Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`tcp://localhost:${node.ports.tcp}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">SSL Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`ssl://localhost:${node.ports.ssl}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">WS Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`ws://localhost:${node.ports.ws}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Secure WS Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`wss://localhost:${node.ports.wss}`"
+        /></a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">RPC Host</a-col>
+        <a-col :span="14">
+          <CopyButton :copyText="`rpc://localhost:${node.ports.rpc}`"
+        /></a-col>
+      </a-row>
+    </template>
+    <template v-if="node.type === 'beacon' || node.type === 'ecdsa'">
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Version</a-col>
+        <a-col style="text-align: right" :span="14">{{ node.version }}</a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="10">Peers</a-col>
+        <a-col style="text-align: right" :span="14"
+          >{{ node.peers.length }}</a-col
+        >
+      </a-row>
+    </template>
+    <a-divider />
+    <a-button type="primary" @click="openContainerLogs" block ghost
+      >View Docker Logs
+    </a-button>
+  </div>
+</a-drawer>

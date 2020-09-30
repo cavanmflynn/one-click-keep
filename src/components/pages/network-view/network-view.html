@@ -48,8 +48,10 @@
         <NodeCard
           :node="node"
           :titleCase="node.type === 'ecdsa' ? 'uppercase' : undefined"
+          @click.native="() => onNodeSelected(node)"
         ></NodeCard>
       </a-col>
     </a-row>
   </div>
+  <NodeDrawer :node="selectedNode" :onClose="onNodeDrawerClosed" />
 </div>
