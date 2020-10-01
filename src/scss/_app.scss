@@ -74,3 +74,7 @@ body {
     margin-left: auto;
   }
 }
+
+.ant-message-notice-content {
+  background: lighten($dark-gray, 5);
+}

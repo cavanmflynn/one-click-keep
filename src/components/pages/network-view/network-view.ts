@@ -53,6 +53,10 @@ export default class NetworkView extends Vue {
     return getNetworkById(network.networks, this.$route.params.id);
   }
 
+  get isStarted() {
+    return this.network.status === Status.Started;
+  }
+
   get nodeList() {
     return Object.values(this.network.nodes).flat();
   }
@@ -113,6 +117,10 @@ export default class NetworkView extends Vue {
   }
 
   public onNodeSelected(node: CommonNode) {
+    if (!this.isStarted) {
+      this.$message.warning('Start network to view node details');
+      return;
+    }
     this.selectedNode = node;
   }
 

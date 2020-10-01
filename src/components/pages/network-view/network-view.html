@@ -11,6 +11,7 @@
     </template>
     <div slot="extra" class="page/network-view__extra">
       <a-button
+        v-if="isStarted"
         @click="openTbtcDapp"
         class="page/network-view__extra__app-button"
         size="small"
@@ -19,6 +20,7 @@
         Mint or Redeem tBTC
       </a-button>
       <a-button
+        v-if="isStarted"
         @click="openKeepDashboard"
         class="page/network-view__extra__app-button"
         size="small"
@@ -62,7 +64,7 @@
       >
         <NodeCard
           :node="node"
-          :titleCase="node.type === 'ecdsa' ? 'uppercase' : undefined"
+          :disabled="!isStarted"
           @click.native="() => onNodeSelected(node)"
         ></NodeCard>
       </a-col>

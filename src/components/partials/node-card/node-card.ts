@@ -8,6 +8,19 @@ export class NodeCard extends Vue {
   @Prop({ type: Object, required: true })
   public node: CommonNode;
 
-  @Prop({ type: String, default: 'startcase' })
-  public titleCase: 'lowercase' | 'uppercase' | 'startcase';
+  @Prop({ type: Boolean, required: true })
+  public disabled: boolean;
+
+  get titleCase() {
+    return this.node?.type === 'ecdsa' ? 'uppercase' : 'startcase';
+  }
+
+  get cardStyle() {
+    if (this.disabled) {
+      return {
+        opacity: '0.65',
+        cursor: 'not-allowed',
+      };
+    }
+  }
 }
