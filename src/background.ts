@@ -2,9 +2,13 @@
 
 import { app, BrowserWindow, protocol, ipcMain } from 'electron';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import { autoUpdater } from 'electron-updater';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import { sync } from 'shell-env';
 import { initAppIpcListener } from './electron';
+import path from 'path';
+
+declare let __static: string;
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -36,6 +40,7 @@ function createWindow() {
         .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
       enableRemoteModule: true,
     },
+    icon: path.join(__static, 'icon.png'),
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -46,6 +51,7 @@ function createWindow() {
     createProtocol('app');
     // Load the index.html when not in development
     win.loadURL('app://./index.html');
+    autoUpdater.checkForUpdatesAndNotify();
   }
 
   win.on('closed', () => {

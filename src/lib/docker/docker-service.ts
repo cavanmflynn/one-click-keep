@@ -240,7 +240,7 @@ class DockerService {
 
   private getArgs(network?: Network) {
     const args = {
-      cwd: network ? network.path : remote.app.getAppPath(),
+      cwd: network ? network.path : process.env.PORTABLE_EXECUTABLE_DIR,
       env: {
         ...process.env,
         ...(remote?.process?.env || {}),

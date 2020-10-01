@@ -35,7 +35,7 @@ const openWindow = async (args: { url: string }): Promise<boolean> => {
     window?.show();
   });
 
-  await window.loadURL(`${BASE_URL}/${args.url}`);
+  await window.loadURL(`${BASE_URL}#${args.url}`);
 
   winState.manage(window);
 
