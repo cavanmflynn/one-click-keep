@@ -21,7 +21,7 @@
 
 One-Click KEEP was built to help [KEEP Network](https://keep.network/) application developers quickly spin up one or more networks locally on their computers.
 
-Key Features:
+**Key Features:**
 
 * Create a local KEEP Network in a few clicks:
    * 1 Bitcoin Node
