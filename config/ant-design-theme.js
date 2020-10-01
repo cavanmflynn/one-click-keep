@@ -3,7 +3,7 @@
 // @see https://vue.ant.design/docs/vue/customize-theme/#Customize-in-vue-cli-3
 module.exports = {
   'primary-color': '#48DBB4',
-  'primary-1': '#7850CD',
+  'primary-1': '#22201e',
   'link-color': '#FFFFFF',
   'layout-body-background': '#070808',
   'component-background': '#19191A',

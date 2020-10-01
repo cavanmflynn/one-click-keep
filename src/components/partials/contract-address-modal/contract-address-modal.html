@@ -1,0 +1,15 @@
+<a-modal
+  :visible="visible"
+  width="640px"
+  ok-text="Close"
+  :cancelButtonProps="{ style: { display: 'none' } }"
+  class="partial/contract-address-modal"
+  @cancel="handleCloseModal"
+  @ok="handleCloseModal"
+>
+  <a-table :columns="columns" :data-source="contracts" bordered>
+    <template slot="title" slot-scope="currentPageData">
+      Deployed Contracts
+    </template>
+  </a-table>
+</a-modal>

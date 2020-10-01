@@ -144,6 +144,10 @@
         </a-col>
       </a-row>
       <a-divider class="partial/node-drawer__divider" />
+      <a-button type="primary" @click="openContractsModal" block ghost
+        >View Contracts
+      </a-button>
+      <a-divider class="partial/node-drawer__divider" />
       <a-button type="primary" @click="downloadContractArtifacts" block ghost
         >Download Contract Artifacts
       </a-button>
@@ -222,4 +226,8 @@
       >View Docker Logs
     </a-button>
   </div>
+  <ContractAddressModal
+    :visible="contractModalVisible"
+    :handleCloseModal="closeContractsModal"
+  />
 </a-drawer>

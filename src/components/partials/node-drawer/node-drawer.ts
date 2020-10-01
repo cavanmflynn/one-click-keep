@@ -11,11 +11,13 @@ import {
   ETHEREUM_PRIVATE_KEYS,
 } from '@/lib';
 import { system, bitcoind, ethereum } from '@/store';
+import { ContractAddressModal } from '../contract-address-modal';
 
 @WithRender
 @Component({
   components: {
     CopyButton,
+    ContractAddressModal,
   },
 })
 export class NodeDrawer extends Vue {
@@ -24,6 +26,8 @@ export class NodeDrawer extends Vue {
 
   @Prop({ type: Function, required: true })
   public onClose: () => void;
+
+  public contractModalVisible = false;
 
   public ethereumMining = false;
   public ethereumMineBlockCount = 1;
@@ -62,6 +66,14 @@ export class NodeDrawer extends Vue {
   public async openContainerLogs() {
     const url = `logs/${getContainerName(this.node)}`;
     await system.openWindow(url);
+  }
+
+  public openContractsModal() {
+    this.contractModalVisible = true;
+  }
+
+  public closeContractsModal() {
+    this.contractModalVisible = false;
   }
 
   public async downloadContractArtifacts() {
