@@ -1,33 +1,58 @@
-# One-Click KEEP
+<h1 align="center">
+  One-Click KEEP
+  <br>
+</h1>
 
-> One-click KEEP and tBTC setup for local app development & testing
+<h4 align="center">One-click KEEP networks for local app development & testing</h4>
 
-<img width="800" src="https://user-images.githubusercontent.com/20102664/94516832-f2f0bf80-01e3-11eb-9f9c-0db037a9b505.png">
+<p align="center">
+  <a href="#purpose">Purpose</a> •
+  <a href="#download">Download</a> •
+  <a href="#credits">Credits</a> •
+  <a href="#development">Development</a> •
+  <a href="#license">License</a>
+</p>
+
+<p align="center">
+  <img width="800px" src="https://user-images.githubusercontent.com/20102664/94516832-f2f0bf80-01e3-11eb-9f9c-0db037a9b505.png">
+</p>
 
 ## Purpose
 
 One-Click KEEP was built to help [KEEP Network](https://keep.network/) application developers quickly spin up one or more networks locally on their computers.
 
-With One-Click KEEP you can:
+Key Features:
 
-* Start all nodes required for local tBTC development on the KEEP network:
-    * Bitcoin (1)
-    * Ethereum (1)
-    * Electrum (1)
-    * KEEP ECDSA Node (Up to 9)
-    * KEEP Random Beacon Node (Up to 9)
-* Open the KEEP Dashboard and tBTC dApp with one-click and interact with the network
+* Create a local KEEP Network in a few clicks:
+   * 1 Bitcoin Node
+   * 1 Ethereum Node
+   * 1 Electrum Server
+   * Up to 9 KEEP ECDSA Nodes
+   * Up to 9 KEEP Random Beacon Nodes
+* Auto-hosted tBTC dApp & KEEP dashboard instances
 * View streaming logs from each node
+* Manually mine new Bitcoin & Ethereum blocks
+* Send bitcoin to fund deposits
+* Export contract artifacts for use in your project
 * Connect from your app to the network via RPC
-* View contracts and export artifacts for consumption in integrating projects
-* Manually mine new blocks & send bitcoin
+* i18n Ready
+* Multiple OS support for Mac, Windows & Linux
 
-Coming Soon
+Coming Soon:
+
 * Trigger conditions from the UI (one-click mint, liquidation scenarios, etc.)
 * Manual docker image version selection & custom image support
-* Easier consumption in tbtc.js & other tbtc libraries
+* Easier consumption in tbtc.js & other libraries
 
-Have a feature recommendation? Open an issue!
+Have a feature recommendation? DM me in Discord or open an issue!
+
+## Download
+
+You can [download](https://github.com/cavanmflynn/one-click-keep/releases/tag/v0.1.0) the latest installable version of One-Click KEEP for Windows, macOS and Linux.
+
+## Credits
+
+This project was heavily inspired by [Polar](https://github.com/jamaljsr/polar). Check it out if you're a Lightning Network developer or interested in the Lightning Network.
 
 ## Development
 
@@ -38,25 +63,25 @@ yarn
 
 ### Compiles and hot-reloads for development
 ```
-yarn start
+yarn electron:serve
 ```
 
-### Compiles and minifies for production
+### Bundles for production
 ```
-yarn build
+yarn electron:build
 ```
 
-### Lints and fixes files
+### Lints files
 ```
 yarn lint
 ```
 
-### Run your unit tests
+### Formats files
 ```
-yarn test:unit
+yarn format
 ```
 
-## Folder Structure
+### Folder Structure
 
     src/
     ├── api/           # Various API clients, which simplify communication with multiple backends
@@ -76,7 +101,7 @@ yarn test:unit
     ├   └──fonts/      # The applications's font files
     └── index.html     # The applications's HTML entry point
 
-## Libraries
+### Libraries
 This project makes use of the following libraries for an improved development experience:
 * [Vue Class Component](https://class-component.vuejs.org) - A library that lets you make your Vue components in class-style syntax.
 * [Ant Design Vue](https://www.antdv.com/docs/vue/introduce) - An enterprise-class UI components based on Ant Design and Vue.
@@ -84,7 +109,11 @@ This project makes use of the following libraries for an improved development ex
 
 * [Vuex Module Decorators](https://championswimmer.in/vuex-module-decorators) - TypeScript/ES7 Decorators to create Vuex modules declaratively.
 
-## SCSS Namespacing
+### SCSS Namespacing
 
 * The `page` mixin should be used used when creating the top-level class for a page.
 * The `partial` mixin should be used used when creating the top-level class for a partial view.
+
+## License
+
+[MIT](LICENSE)
