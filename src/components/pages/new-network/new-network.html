@@ -4,7 +4,12 @@
     :style="{ padding: '16px 0' }"
     @back="() => $router.go(-1)"
   />
-  <a-form :form="form" :colon="false" @submit="createNetwork">
+  <a-form
+    class="page/new-network__form"
+    :form="form"
+    :colon="false"
+    @submit="createNetwork"
+  >
     <a-form-item :label="'NETWORK_NAME' | translate">
       <a-input
         placeholder="My KEEP Network"

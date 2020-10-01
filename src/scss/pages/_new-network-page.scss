@@ -1,2 +1,8 @@
 @include page('new-network') {
+  &__form {
+    padding: 16px;
+    border-radius: 2px;
+    border: 1px solid $component-border;
+    background: $component-bg;
+  }
 }
