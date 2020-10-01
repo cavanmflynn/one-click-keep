@@ -5,7 +5,6 @@ import { getNetworkById, delay, ethereumService } from '@/lib/utils';
 import { system, network } from '..';
 import { languageLibrary } from '@/localization';
 import Vue from 'vue';
-import { info } from 'electron-log';
 
 @Module({ store, name: 'ethereum', dynamic: true, namespaced: true })
 export class EthereumModule extends VuexModule {
@@ -36,7 +35,6 @@ export class EthereumModule extends VuexModule {
     if (!this._nodes[node.name]) {
       Vue.set(this._nodes, node.name, {});
     }
-    info(this._nodes[node.name], 'blockHeight', blockHeight);
     Vue.set(this._nodes[node.name], 'blockHeight', blockHeight);
   }
 

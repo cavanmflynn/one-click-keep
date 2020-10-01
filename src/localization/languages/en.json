@@ -12,6 +12,7 @@
 
   "NETWORK_NAME": "Network Name",
   "NETWORK_NAME_REQUIRED": "A network name is required",
+  "NETWORK_NAME_MAX_LENGTH": "Network name must be 16 characters or less",
   "HOW_MANY_NODES": "How many nodes?",
   "RANDOM_BEACON": "Random Beacon",
   "RANDOM_BEACON_NODE_REQUIRED": "At least one random beacon node is required",

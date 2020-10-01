@@ -1,7 +1,10 @@
-import { providers } from 'ethers';
+import { providers, Contract } from 'ethers';
 import { EthereumNode } from '@/types';
 import { waitFor } from './async';
 import { range } from './numbers';
+import { ETHEREUM_ACCOUNTS, CONTRACTS } from '../constants';
+import { KeepRandomBeaconOperatorABI } from '../abis';
+import { info } from 'electron-log';
 
 class EthereumService {
   createClient(node: EthereumNode) {
@@ -14,6 +17,26 @@ class EthereumService {
 
   async getBlockHeight(node: EthereumNode) {
     return this.createClient(node).getBlockNumber();
+  }
+
+  async triggerKeepBeaconGenesis(node: EthereumNode) {
+    try {
+      const [owner] = ETHEREUM_ACCOUNTS;
+      const signer = this.createClient(node).getSigner(owner);
+      const contract = new Contract(
+        CONTRACTS.KEEP.CORE.KEEP_RANDOM_BEACON_OPERATOR.ADDRESS,
+        KeepRandomBeaconOperatorABI,
+        signer,
+      );
+      const dkgGas = await contract.dkgGasEstimate();
+      const gasPrice = await contract.gasPriceCeiling();
+      const dkgFee = dkgGas.mul(gasPrice);
+
+      await contract.genesis({ value: dkgFee });
+      info('Beacon genesis successful');
+    } catch (error) {
+      error('Beacon genesis failed with error', error);
+    }
   }
 
   /**

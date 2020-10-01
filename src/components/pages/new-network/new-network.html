@@ -16,7 +16,10 @@
         v-decorator="[
           'name',
           {
-            rules: [{ required: true, message: $lang.translate('NETWORK_NAME_REQUIRED') }],
+            rules: [
+              { required: true, message: $lang.translate('NETWORK_NAME_REQUIRED') }, 
+              { max: 16, message: $lang.translate('NETWORK_NAME_MAX_LENGTH') },
+            ],
           },
         ]"
       />

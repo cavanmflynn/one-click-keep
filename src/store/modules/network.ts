@@ -270,6 +270,8 @@ export class NetworkModule extends VuexModule {
             .then(async () => {
               this.setStatus({ id, status: Status.Started, only: eth.name });
               await ethereum.getInfo(eth);
+              await ethereumService.triggerKeepBeaconGenesis(eth);
+              await ethereum.mine({ blocks: 5, node: eth }); // tBTC dapp fails unless blocks are mined on startup
             })
             .catch((error) =>
               this.setStatus({
