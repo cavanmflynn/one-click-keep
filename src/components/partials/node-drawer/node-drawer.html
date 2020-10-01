@@ -49,6 +49,31 @@
         >
       </a-row>
       <a-divider class="partial/node-drawer__divider" />
+      <a-row :gutter="[16, 20]">
+        <a-col :span="16"
+          ><a-input placeholder="Bitcoin Address" v-model="bitcoinSendTo"
+        /></a-col>
+        <a-col :span="8"
+          ><a-input-number
+            style="float: right"
+            placeholder="Amount"
+            :min="0.00000001"
+            v-model="bitcoinSendAmount"
+        /></a-col>
+      </a-row>
+      <a-row>
+        <a-col
+          ><a-button
+            type="primary"
+            @click="() => sendBitcoin(node)"
+            :loading="bitcoinSending"
+            ghost
+            block
+            >Send Bitcoin</a-button
+          ></a-col
+        >
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
       <a-row class="partial/node-drawer__row">
         <a-col :span="10">RPC Host</a-col>
         <a-col :span="14">

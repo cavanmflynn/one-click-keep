@@ -34,6 +34,9 @@ export class NodeDrawer extends Vue {
 
   public bitcoinMining = false;
   public bitcoinMineBlockCount = 1;
+  public bitcoinSending = false;
+  public bitcoinSendTo = '';
+  public bitcoinSendAmount: number | null = null;
 
   get titleCase() {
     return this.node?.type === 'ecdsa' ? 'uppercase' : 'startcase';
@@ -101,10 +104,33 @@ export class NodeDrawer extends Vue {
         node,
         blocks: this.bitcoinMineBlockCount,
       });
+      this.bitcoinMineBlockCount = 1;
     } catch (error) {
       system.notify({ message: 'Bitcoin block mining failed', error });
     } finally {
       this.bitcoinMining = false;
+    }
+  }
+
+  public async sendBitcoin(node: BitcoinNode) {
+    try {
+      this.bitcoinSending = true;
+      if (!this.bitcoinSendAmount) {
+        this.$message.error('Please enter a send amount');
+        return;
+      }
+      await bitcoind.sendFunds({
+        node,
+        toAddress: this.bitcoinSendTo,
+        amount: this.bitcoinSendAmount,
+      });
+      this.bitcoinSendTo = '';
+      this.bitcoinSendAmount = null;
+      this.$message.success('Bitcoin sent!');
+    } catch (error) {
+      system.notify({ message: 'Failed to send bitcoin', error });
+    } finally {
+      this.bitcoinSending = false;
     }
   }
 }

@@ -26,6 +26,7 @@
     }
   },
   "MINE_ERROR": "The number of blocks to mine must be a positive number",
+  "SEND_ERROR": "The send amount must be a positive number",
 
   "RANDOM_BEACON_NODES": "Beacon Nodes",
   "ECDSA_SIGNING_NODES": "Signing Nodes",

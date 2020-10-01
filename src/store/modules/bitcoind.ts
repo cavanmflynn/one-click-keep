@@ -51,7 +51,7 @@ export class BitcoindModule extends VuexModule {
 
   @Action({ rawError: true })
   async mine({ blocks, node }: { blocks: number; node: BitcoinNode }) {
-    if (blocks < 0)
+    if (blocks <= 0)
       throw new Error(
         languageLibrary[system.language || 'en'].get('MINE_ERROR').toString({}),
       );
@@ -66,5 +66,23 @@ export class BitcoindModule extends VuexModule {
         .filter((n) => n.status === Status.Started)
         .map(this.getInfo),
     );
+  }
+
+  @Action({ rawError: true })
+  async sendFunds({
+    toAddress,
+    amount,
+    node,
+  }: {
+    toAddress: string;
+    amount: number;
+    node: BitcoinNode;
+  }) {
+    if (amount <= 0)
+      throw new Error(
+        languageLibrary[system.language || 'en'].get('SEND_ERROR').toString({}),
+      );
+
+    await bitcoindService.sendFunds(node, toAddress, amount);
   }
 }

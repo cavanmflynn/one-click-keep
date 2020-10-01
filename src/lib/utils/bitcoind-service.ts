@@ -69,7 +69,7 @@ class BitcoindService {
   async mine(numBlocks: number, node: BitcoinNode) {
     const client = this.createClient(node);
     const addr = await client.getNewAddress();
-    return await client.generateToAddress(numBlocks, addr);
+    return client.generateToAddress(numBlocks, addr);
   }
 
   /**
