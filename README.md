@@ -10,17 +10,24 @@ One-Click KEEP was built to help [KEEP Network](https://keep.network/) applicati
 
 With One-Click KEEP you can:
 
-* Spin up the 5 different types required for tBTC development on the KEEP Network:
+* Start all nodes required for local tBTC development on the KEEP network:
     * Bitcoin (1)
     * Ethereum (1)
     * Electrum (1)
     * KEEP ECDSA Node (Up to 9)
     * KEEP Random Beacon Node (Up to 9)
 * Open the KEEP Dashboard and tBTC dApp with one-click and interact with the network
-* Manually mine new blocks
-* Launch a terminal in each node
 * View streaming logs from each node
 * Connect from your app to the network via RPC
+* View contracts and export artifacts for consumption in integrating projects
+* Manually mine new blocks & send bitcoin
+
+Coming Soon
+* Trigger conditions from the UI (one-click mint, liquidation scenarios, etc.)
+* Manual docker image version selection & custom image support
+* Easier consumption in tbtc.js & other tbtc libraries
+
+Have a feature recommendation? Open an issue!
 
 ## Development
 
@@ -55,9 +62,8 @@ yarn test:unit
     ├── api/           # Various API clients, which simplify communication with multiple backends
     ├── components/    # Vue components, which includes both pages and partials
     ├── filters/       # Filters used for text formatting and other transformations
-    ├── images/        # Images used on the entire application
     ├── lib/           # Shared code (Custom classes, functions, modules, etc.)
-    ├── localization/  # Temporary home of language keys and values, which will be used for multi-language support (should auto-pull from airtable once adding another language)
+    ├── localization/  # Language keys and values, which will be used for multi-language support
     ├── scss/          # SCSS used to style the entire application
     ├── services/      # TypeDI services, which can be injected into the Vue prototype for use as plugins
     ├── store/         # The Vuex store, which is used to hold the application's shared state
