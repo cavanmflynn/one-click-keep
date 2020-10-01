@@ -108,6 +108,35 @@ export type NodeImplementation =
   | BeaconNode['implementation']
   | EcdsaNode['implementation'];
 
+export interface CommonApp {
+  id: number;
+  networkId: number;
+  name: string;
+  version: string;
+  status: Status;
+  errorMsg?: string;
+  docker: {
+    image: string;
+    command: string;
+  };
+}
+
+export interface TbtcApp extends CommonApp {
+  app: 'tbtc-dapp';
+  ports: {
+    http: number;
+  };
+}
+
+export interface KeepApp extends CommonApp {
+  app: 'keep-dashboard';
+  ports: {
+    http: number;
+  };
+}
+
+export type AppName = TbtcApp['app'] | KeepApp['app'];
+
 export interface EthereumNodeInfo {
   blockHeight?: number;
 }
@@ -140,6 +169,10 @@ export interface Network {
     beacon: BeaconNode[];
     ecdsa: EcdsaNode[];
   };
+  apps: {
+    tbtc: TbtcApp;
+    keep: KeepApp;
+  };
 }
 
 export interface NetworksFile {
@@ -147,15 +180,23 @@ export interface NetworksFile {
   networks: Network[];
 }
 
-/**
- * Managed images are hard-coded with docker images pushed to the
- * Docker Hub repo
- */
-export interface ManagedImage {
+export interface ManagedNodeImage {
   implementation: NodeImplementation;
   version: string;
   command: string;
 }
+
+export interface ManagedAppImage {
+  name: AppName;
+  version: string;
+  command: string;
+}
+
+/**
+ * Managed images are hard-coded with docker images pushed to the
+ * Docker Hub repo
+ */
+export type ManagedImage = ManagedNodeImage | ManagedAppImage;
 
 //#endregion
 
@@ -191,7 +232,8 @@ export interface DockerRepoImage {
 export interface DockerRepoState {
   /** The version of the repo state file. Used to quickly identify updates */
   version: number;
-  images: Record<NodeImplementation, DockerRepoImage>;
+  nodeImages: Record<NodeImplementation, DockerRepoImage>;
+  appImages: Record<AppName, DockerRepoImage>;
 }
 
 export interface OpenPorts {
@@ -206,6 +248,7 @@ export interface OpenPorts {
     ssl?: number;
     ws?: number;
     wss?: number;
+    http?: number;
   };
 }
 

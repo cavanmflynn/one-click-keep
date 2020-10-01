@@ -114,13 +114,33 @@
         /></a-col>
       </a-row>
       <a-divider class="partial/node-drawer__divider" />
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Mnemonic</a-col>
+        <a-col :span="14">
+          <a-tooltip :title="ethereumMnemonic">
+            <CopyButton
+              :displayText="ethereumMnemonic | shorten"
+              :copyText="ethereumMnemonic" /></a-tooltip
+        ></a-col>
+      </a-row>
+      <a-divider class="partial/node-drawer__divider" />
       <a-row
         v-for="(account, i) in ethereumAccounts"
         class="partial/node-drawer__row"
       >
-        <a-col :span="10">Account {{ i + 1 }}</a-col>
-        <a-col :span="14">
-          <CopyButton :displayText="account | shorten" :copyText="account" />
+        <a-col :span="10"> Account {{ i + 1 }} </a-col>
+        <a-col :span="7" style="padding-right: 16px">
+          <a-tooltip :title="account">
+            <CopyButton displayText="Address" :copyText="account" />
+          </a-tooltip>
+        </a-col>
+        <a-col :span="7">
+          <a-tooltip :title="ethereumPrivateKeys[i]">
+            <CopyButton
+              displayText="Private Key"
+              :copyText="ethereumPrivateKeys[i]"
+            />
+          </a-tooltip>
         </a-col>
       </a-row>
       <a-divider class="partial/node-drawer__divider" />
@@ -170,6 +190,31 @@
         <a-col style="text-align: right" :span="14"
           >{{ node.peers.length }}</a-col
         >
+      </a-row>
+      <a-divider orientation="left" class="partial/node-drawer__divider"
+        >Operator</a-divider
+      >
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Address</a-col>
+        <a-col :span="14">
+          <a-tooltip :title="ethereumAccounts[node.id + 1]">
+            <CopyButton
+              :displayText="ethereumAccounts[node.id + 1] | shorten"
+              :copyText="ethereumAccounts[node.id + 1]"
+            />
+          </a-tooltip>
+        </a-col>
+      </a-row>
+      <a-row class="partial/node-drawer__row">
+        <a-col :span="10">Private Key</a-col>
+        <a-col :span="14">
+          <a-tooltip :title="ethereumPrivateKeys[node.id + 1]">
+            <CopyButton
+              :displayText="ethereumPrivateKeys[node.id + 1] | shorten"
+              :copyText="ethereumPrivateKeys[node.id + 1]"
+            />
+          </a-tooltip>
+        </a-col>
       </a-row>
     </template>
     <a-divider class="partial/node-drawer__divider" />

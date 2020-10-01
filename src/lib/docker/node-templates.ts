@@ -1,5 +1,5 @@
 import {
-  DOCKER_CONFIGS,
+  NODE_DOCKER_CONFIGS,
   KEEP_BEACON_CREDENTIALS,
   KEEP_ECDSA_CREDENTIALS,
   BITCOIN_CREDENTIALS,
@@ -29,7 +29,7 @@ export const bitcoind = (
   hostname: name,
   command: trimInside(command),
   volumes: [
-    `./volumes/${DOCKER_CONFIGS.bitcoind.volumeDirName}/${name}:/home/bitcoin/.bitcoin`,
+    `./volumes/${NODE_DOCKER_CONFIGS.bitcoind.volumeDirName}/${name}:/home/bitcoin/.bitcoin`,
   ],
   expose: [
     '18443', // RPC
@@ -56,7 +56,7 @@ export const ganache = (
   hostname: name,
   command: '',
   volumes: [
-    `./volumes/${DOCKER_CONFIGS.ganache.volumeDirName}/${name}:/home/ethereum/.ethereum`,
+    `./volumes/${NODE_DOCKER_CONFIGS.ganache.volumeDirName}/${name}:/home/ethereum/.ethereum`,
   ],
   expose: [
     '8545', // RPC
@@ -91,7 +91,7 @@ export const electrumx = (
   hostname: name,
   command: '',
   volumes: [
-    `./volumes/${DOCKER_CONFIGS.electrumx.volumeDirName}/${name}:/home/electrumx/.electrumx`,
+    `./volumes/${NODE_DOCKER_CONFIGS.electrumx.volumeDirName}/${name}:/home/electrumx/.electrumx`,
   ],
   expose: [
     '50001', // TCP
@@ -125,10 +125,10 @@ export const keepBeacon = (
   command: trimInside(command),
   restart: 'always',
   volumes: [
-    `./volumes/${DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}:/home/keep-beacon/.keep-beacon`,
-    `./volumes/${DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}/keystore:/keystore`,
-    `./volumes/${DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}/storage:/storage`,
-    `./volumes/${DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}/config:/config`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}:/home/keep-beacon/.keep-beacon`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}/keystore:/keystore`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}/storage:/storage`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-beacon'].volumeDirName}/${name}/config:/config`,
   ],
   expose: [
     '3919', // P2P
@@ -154,15 +154,55 @@ export const keepEcdsa = (
   command: trimInside(command),
   restart: 'always',
   volumes: [
-    `./volumes/${DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}:/home/keep-ecdsa/.keep-ecdsa`,
-    `./volumes/${DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}/keystore:/keystore`,
-    `./volumes/${DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}/storage:/storage`,
-    `./volumes/${DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}/config:/config`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}:/home/keep-ecdsa/.keep-ecdsa`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}/keystore:/keystore`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}/storage:/storage`,
+    `./volumes/${NODE_DOCKER_CONFIGS['keep-ecdsa'].volumeDirName}/${name}/config:/config`,
   ],
   expose: [
     '3919', // P2P
   ],
   ports: [
     `${p2pPort}:3919`, // P2P
+  ],
+});
+
+export const tbtcDapp = (
+  name: string,
+  container: string,
+  image: string,
+  httpPort: number,
+): ComposeService => ({
+  image,
+  container_name: container,
+  environment: {},
+  hostname: name,
+  command: '',
+  volumes: [],
+  expose: [
+    '80', // HTTP
+  ],
+  ports: [
+    `${httpPort}:80`, // HTTP
+  ],
+});
+
+export const keepDashboard = (
+  name: string,
+  container: string,
+  image: string,
+  httpPort: number,
+): ComposeService => ({
+  image,
+  container_name: container,
+  environment: {},
+  hostname: name,
+  command: '',
+  volumes: [],
+  expose: [
+    '80', // HTTP
+  ],
+  ports: [
+    `${httpPort}:80`, // HTTP
   ],
 });

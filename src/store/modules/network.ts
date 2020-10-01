@@ -8,6 +8,7 @@ import {
   CommonNode,
   BitcoinNode,
   EthereumNode,
+  CommonApp,
 } from '@/types';
 import { docker } from '@/lib/docker/docker-service';
 import {
@@ -57,33 +58,33 @@ export class NetworkModule extends VuexModule {
     error?: Error;
   }) {
     const network = getNetworkById(this._networks, id);
-    const setNodeStatus = (n: CommonNode) => {
+    const setStatus = (n: CommonNode | CommonApp) => {
       n.status = status;
       n.errorMsg = error?.message;
     };
     if (only) {
       // Only update a specific node's status
-      network.nodes.bitcoin
-        .filter((n) => n.name === only)
-        .forEach(setNodeStatus);
-      network.nodes.ethereum
-        .filter((n) => n.name === only)
-        .forEach(setNodeStatus);
-      network.nodes.electrum
-        .filter((n) => n.name === only)
-        .forEach(setNodeStatus);
-      network.nodes.beacon
-        .filter((n) => n.name === only)
-        .forEach(setNodeStatus);
-      network.nodes.ecdsa.filter((n) => n.name === only).forEach(setNodeStatus);
+      network.nodes.bitcoin.filter((n) => n.name === only).forEach(setStatus);
+      network.nodes.ethereum.filter((n) => n.name === only).forEach(setStatus);
+      network.nodes.electrum.filter((n) => n.name === only).forEach(setStatus);
+      network.nodes.beacon.filter((n) => n.name === only).forEach(setStatus);
+      network.nodes.ecdsa.filter((n) => n.name === only).forEach(setStatus);
+      if (network.apps.tbtc?.name === only) {
+        setStatus(network.apps.tbtc);
+      }
+      if (network.apps.keep?.name === only) {
+        setStatus(network.apps.keep);
+      }
     } else if (all) {
       // Update all node statuses
       network.status = status;
-      network.nodes.bitcoin.forEach(setNodeStatus);
-      network.nodes.ethereum.forEach(setNodeStatus);
-      network.nodes.electrum.forEach(setNodeStatus);
-      network.nodes.beacon.forEach(setNodeStatus);
-      network.nodes.ecdsa.forEach(setNodeStatus);
+      network.nodes.bitcoin.forEach(setStatus);
+      network.nodes.ethereum.forEach(setStatus);
+      network.nodes.electrum.forEach(setStatus);
+      network.nodes.beacon.forEach(setStatus);
+      network.nodes.ecdsa.forEach(setStatus);
+      network.apps.tbtc && setStatus(network.apps.tbtc);
+      network.apps.keep && setStatus(network.apps.keep);
     } else {
       // If no specific node name provided, just update the network status
       network.status = status;
@@ -114,6 +115,24 @@ export class NetworkModule extends VuexModule {
     network.nodes.ecdsa
       .filter((n) => !!ports[n.name])
       .forEach((n) => (n.ports = { ...n.ports, ...ports[n.name] }));
+  }
+
+  @Mutation
+  public updateAppPorts({
+    id,
+    ports,
+  }: {
+    id: string | number;
+    ports: OpenPorts;
+  }) {
+    const network = getNetworkById(this._networks, id);
+    const { tbtc, keep } = network.apps;
+    if (tbtc?.ports?.[tbtc?.name]) {
+      tbtc.ports = { http: ports[tbtc.name].http! };
+    }
+    if (keep?.ports?.[keep?.name]) {
+      keep.ports = { http: ports[keep.name].http! };
+    }
   }
 
   @Action({ rawError: true })
@@ -163,6 +182,7 @@ export class NetworkModule extends VuexModule {
       if (ports) {
         // At least one port was updated. Save the network & composeFile
         this.updateNodePorts({ id, ports });
+        this.updateAppPorts({ id, ports });
         // Re-fetch the network with the updated ports
         network = getNetworkById(this._networks, id);
         await this.save();
@@ -283,11 +303,15 @@ export class NetworkModule extends VuexModule {
     const network = getNetworkById(this._networks, id);
     const statuses = [
       network.status,
+      // Nodes
       ...network.nodes.bitcoin.map((n) => n.status),
       ...network.nodes.ethereum.map((n) => n.status),
       ...network.nodes.electrum.map((n) => n.status),
       ...network.nodes.beacon.map((n) => n.status),
       ...network.nodes.ecdsa.map((n) => n.status),
+      // Apps
+      network.apps.tbtc.status,
+      network.apps.keep.status,
     ];
     if (statuses.find((n) => n !== Status.Stopped)) {
       await this.stop(id);
@@ -296,6 +320,7 @@ export class NetworkModule extends VuexModule {
     const newNetworks = this.networks.filter((n) => n.id !== id);
     this.setNetworks(newNetworks);
     network.nodes.bitcoin.forEach((n) => bitcoind.removeNode(n.name));
+    network.nodes.ethereum.forEach((n) => ethereum.removeNode(n.name));
     await this.save();
   }
 }

@@ -61,6 +61,7 @@ class TomlService {
         ContractAddresses: {
           KeepRandomBeaconOperator: CONTRACTS.KEEP.CORE.KEEP_RANDOM_BEACON_OPERATOR.ADDRESS,
           TokenStaking: CONTRACTS.KEEP.CORE.TOKEN_STAKING.ADDRESS,
+          KeepRandomBeaconService: CONTRACTS.KEEP.CORE.KEEP_RANDOM_BEACON_SERVICE.ADDRESS,
         },
       },
       LibP2P: {
@@ -90,6 +91,11 @@ class TomlService {
         ContractAddresses: {
           BondedECDSAKeepFactory: CONTRACTS.KEEP.ECDSA.BONDED_ECDSA_KEEP_FACTORY.ADDRESS,
         },
+      },
+      SanctionedApplications: {
+        Addresses: [
+          CONTRACTS.KEEP.TBTC.TBTC_SYSTEM.ADDRESS,
+        ]
       },
       LibP2P: {
         Port: 3919,

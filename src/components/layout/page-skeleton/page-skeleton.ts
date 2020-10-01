@@ -15,4 +15,21 @@ export class PageSkeleton extends Vue {
   get initialized() {
     return system.initialized;
   }
+
+  get viewingLogs() {
+    return this.$route.name === 'logs';
+  }
+
+  get contentStyle() {
+    if (this.viewingLogs) {
+      return {
+        padding: 0,
+        marginTop: 0,
+      };
+    }
+    return {
+      padding: '0 16px',
+      marginTop: '64px',
+    };
+  }
 }

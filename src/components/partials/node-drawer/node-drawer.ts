@@ -7,6 +7,8 @@ import {
   ETHEREUM_ACCOUNTS,
   getContainerName,
   CONTRACT_ARTIFACTS_URL,
+  ETHEREUM_MNEMONIC,
+  ETHEREUM_PRIVATE_KEYS,
 } from '@/lib';
 import { system, bitcoind, ethereum } from '@/store';
 
@@ -41,8 +43,16 @@ export class NodeDrawer extends Vue {
     return bitcoind.nodes[this.node.name]?.chainInfo?.blocks ?? 'Unknown';
   }
 
+  get ethereumMnemonic() {
+    return ETHEREUM_MNEMONIC;
+  }
+
   get ethereumAccounts() {
     return ETHEREUM_ACCOUNTS;
+  }
+
+  get ethereumPrivateKeys() {
+    return ETHEREUM_PRIVATE_KEYS;
   }
 
   get ethereumBlockHeight() {

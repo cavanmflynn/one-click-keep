@@ -1,7 +1,7 @@
 import { remote } from 'electron';
 import { join } from 'path';
 import { Network, NodeImplementation } from '@/types';
-import { DOCKER_CONFIGS } from '../constants';
+import { NODE_DOCKER_CONFIGS } from '../constants';
 
 /**
  * Root path where application data is stored
@@ -26,6 +26,6 @@ export const nodePath = (
   join(
     network.path,
     'volumes',
-    DOCKER_CONFIGS[implementation].volumeDirName,
+    NODE_DOCKER_CONFIGS[implementation].volumeDirName,
     name,
   );

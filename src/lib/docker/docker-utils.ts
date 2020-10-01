@@ -1,4 +1,4 @@
-import { CommonNode } from '@/types';
+import { CommonNode, CommonApp } from '@/types';
 
-export const getContainerName = (node: CommonNode) =>
-  `keep-n${node.networkId}-${node.name}`;
+export const getContainerName = (obj: CommonNode | CommonApp) =>
+  `keep-n${obj.networkId}-${obj.name}`;

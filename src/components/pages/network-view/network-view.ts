@@ -1,7 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import WithRender from './network-view.html';
 import { network, system } from '@/store';
-import { getNetworkById } from '@/lib/utils';
+import { getNetworkById, openInBrowser } from '@/lib/utils';
 import { Status, CommonNode } from '@/types';
 import { NodeCard } from '../../partials/node-card';
 import { NodeDrawer } from '../../partials/node-drawer';
@@ -102,6 +102,14 @@ export default class NetworkView extends Vue {
         }
       },
     });
+  }
+
+  public openTbtcDapp() {
+    openInBrowser(`http://localhost:${this.network.apps.tbtc.ports.http}`);
+  }
+
+  public openKeepDashboard() {
+    openInBrowser(`http://localhost:${this.network.apps.keep.ports.http}`);
   }
 
   public onNodeSelected(node: CommonNode) {

@@ -11,10 +11,16 @@ import {
   BeaconNode,
   EcdsaNode,
   ElectrumNode,
+  CommonApp,
+  TbtcApp,
+  KeepApp,
+  AppName,
+  ManagedNodeImage,
+  ManagedAppImage,
 } from '@/types';
 import { networksPath } from './config';
 import { join } from 'path';
-import { BASE_PORTS, DOCKER_REPO } from '../constants';
+import { NODE_BASE_PORTS, DOCKER_REPO, APP_BASE_PORTS } from '../constants';
 import { debug } from 'electron-log';
 import detectPort from 'detect-port';
 import { languageLibrary } from '@/localization';
@@ -37,14 +43,28 @@ export const createNetwork = (config: CreateNetworkConfig) => {
       beacon: [],
       ecdsa: [],
     },
+    apps: {
+      tbtc: {} as TbtcApp, // Populated below
+      keep: {} as KeepApp, // Populated below
+    },
   };
   const { bitcoin, ethereum, electrum, beacon, ecdsa } = network.nodes;
   const dockerWrap = (command: string) => ({ image: '', command });
-  const images: ManagedImage[] = [];
-  Object.entries(dockerRepoState.images).forEach(([type, entry]) => {
+  const nodeImages: ManagedNodeImage[] = [];
+  const appImages: ManagedAppImage[] = [];
+  Object.entries(dockerRepoState.nodeImages).forEach(([key, entry]) => {
     entry.versions.forEach((version) => {
-      images.push({
-        implementation: type as NodeImplementation,
+      nodeImages.push({
+        implementation: key as NodeImplementation,
+        version,
+        command: '',
+      });
+    });
+  });
+  Object.entries(dockerRepoState.appImages).forEach(([key, entry]) => {
+    entry.versions.forEach((version) => {
+      appImages.push({
+        name: key as AppName,
         version,
         command: '',
       });
@@ -52,8 +72,12 @@ export const createNetwork = (config: CreateNetworkConfig) => {
   });
 
   // Add bitcoin node
-  const bitcoindVersion = dockerRepoState.images.bitcoind.latest;
-  const bitcoindCmd = getImageCommand(images, 'bitcoind', bitcoindVersion);
+  const bitcoindVersion = dockerRepoState.nodeImages.bitcoind.latest;
+  const bitcoindCmd = getNodeImageCommand(
+    nodeImages,
+    'bitcoind',
+    bitcoindVersion,
+  );
   bitcoin.push(
     createBitcoindNetworkNode(
       network,
@@ -64,8 +88,8 @@ export const createNetwork = (config: CreateNetworkConfig) => {
   );
 
   // Add ethereum node
-  const ganacheVersion = dockerRepoState.images.ganache.latest;
-  const ganacheCmd = getImageCommand(images, 'ganache', ganacheVersion);
+  const ganacheVersion = dockerRepoState.nodeImages.ganache.latest;
+  const ganacheCmd = getNodeImageCommand(nodeImages, 'ganache', ganacheVersion);
   ethereum.push(
     createGanacheNetworkNode(
       network,
@@ -76,8 +100,12 @@ export const createNetwork = (config: CreateNetworkConfig) => {
   );
 
   // Add electrum node
-  const electrumxVersion = dockerRepoState.images.electrumx.latest;
-  const electrumxCmd = getImageCommand(images, 'electrumx', electrumxVersion);
+  const electrumxVersion = dockerRepoState.nodeImages.electrumx.latest;
+  const electrumxCmd = getNodeImageCommand(
+    nodeImages,
+    'electrumx',
+    electrumxVersion,
+  );
   electrum.push(
     createElectrumXNetworkNode(
       network,
@@ -89,8 +117,12 @@ export const createNetwork = (config: CreateNetworkConfig) => {
 
   // Add beacon nodes
   for (let i = 0; i < beaconNodes; i++) {
-    const beaconVersion = dockerRepoState.images['keep-beacon'].latest;
-    const beaconCmd = getImageCommand(images, 'keep-beacon', beaconVersion);
+    const beaconVersion = dockerRepoState.nodeImages['keep-beacon'].latest;
+    const beaconCmd = getNodeImageCommand(
+      nodeImages,
+      'keep-beacon',
+      beaconVersion,
+    );
     beacon.push(
       createBeaconNetworkNode(
         network,
@@ -103,8 +135,12 @@ export const createNetwork = (config: CreateNetworkConfig) => {
 
   // Add ecdsa nodes
   for (let i = 0; i < ecdsaNodes; i++) {
-    const ecdsaVersion = dockerRepoState.images['keep-ecdsa'].latest;
-    const ecdsaCmd = getImageCommand(images, 'keep-ecdsa', ecdsaVersion);
+    const ecdsaVersion = dockerRepoState.nodeImages['keep-ecdsa'].latest;
+    const ecdsaCmd = getNodeImageCommand(
+      nodeImages,
+      'keep-ecdsa',
+      ecdsaVersion,
+    );
     ecdsa.push(
       createEcdsaNetworkNode(
         network,
@@ -115,11 +151,40 @@ export const createNetwork = (config: CreateNetworkConfig) => {
     );
   }
 
+  // Add tBTC dApp
+  const tbtcDappVersion = dockerRepoState.appImages['tbtc-dapp'].latest;
+  const tbtcDappCmd = getAppImageCommand(
+    appImages,
+    'tbtc-dapp',
+    tbtcDappVersion,
+  );
+  network.apps.tbtc = createTbtcNetworkApp(
+    network,
+    tbtcDappVersion,
+    dockerWrap(tbtcDappCmd),
+    status,
+  );
+
+  // Add KEEP Dashboard
+  const keepDashboardVersion =
+    dockerRepoState.appImages['keep-dashboard'].latest;
+  const keepDashboardCmd = getAppImageCommand(
+    appImages,
+    'keep-dashboard',
+    keepDashboardVersion,
+  );
+  network.apps.keep = createKeepNetworkApp(
+    network,
+    keepDashboardVersion,
+    dockerWrap(keepDashboardCmd),
+    status,
+  );
+
   return network;
 };
 
-export const getImageCommand = (
-  images: ManagedImage[],
+export const getNodeImageCommand = (
+  images: ManagedNodeImage[],
   implementation: NodeImplementation,
   version: string,
 ): string => {
@@ -129,6 +194,20 @@ export const getImageCommand = (
   if (!image) {
     throw new Error(
       `Unable to set docker image command for ${implementation} v${version}`,
+    );
+  }
+  return image.command;
+};
+
+export const getAppImageCommand = (
+  images: ManagedAppImage[],
+  name: AppName,
+  version: string,
+): string => {
+  const image = images.find((i) => i.name === name && i.version === version);
+  if (!image) {
+    throw new Error(
+      `Unable to set docker image command for ${name} v${version}`,
     );
   }
   return image.command;
@@ -154,10 +233,10 @@ export const createBitcoindNetworkNode = (
     peers: [],
     status,
     ports: {
-      rpc: BASE_PORTS.bitcoind.rest + id,
-      p2p: BASE_PORTS.bitcoind.p2p + id,
-      zmqBlock: BASE_PORTS.bitcoind.zmqBlock + id,
-      zmqTx: BASE_PORTS.bitcoind.zmqTx + id,
+      rpc: NODE_BASE_PORTS.bitcoind.rest + id,
+      p2p: NODE_BASE_PORTS.bitcoind.p2p + id,
+      zmqBlock: NODE_BASE_PORTS.bitcoind.zmqBlock + id,
+      zmqTx: NODE_BASE_PORTS.bitcoind.zmqTx + id,
     },
     docker,
   };
@@ -192,7 +271,7 @@ export const createGanacheNetworkNode = (
     peers: [],
     status,
     ports: {
-      rpc: BASE_PORTS.ganache.rpc + id,
+      rpc: NODE_BASE_PORTS.ganache.rpc + id,
     },
     docker,
   };
@@ -220,11 +299,11 @@ export const createElectrumXNetworkNode = (
     peers: [],
     status,
     ports: {
-      tcp: BASE_PORTS.electrumx.tcp + id,
-      ssl: BASE_PORTS.electrumx.ssl + id,
-      ws: BASE_PORTS.electrumx.ws + id,
-      wss: BASE_PORTS.electrumx.wss + id,
-      rpc: BASE_PORTS.electrumx.rpc + id,
+      tcp: NODE_BASE_PORTS.electrumx.tcp + id,
+      ssl: NODE_BASE_PORTS.electrumx.ssl + id,
+      ws: NODE_BASE_PORTS.electrumx.ws + id,
+      wss: NODE_BASE_PORTS.electrumx.wss + id,
+      rpc: NODE_BASE_PORTS.electrumx.rpc + id,
     },
     docker,
   };
@@ -252,7 +331,7 @@ export const createBeaconNetworkNode = (
     peers: [],
     status,
     ports: {
-      p2p: BASE_PORTS['keep-beacon'].p2p + id,
+      p2p: NODE_BASE_PORTS['keep-beacon'].p2p + id,
     },
     docker,
   };
@@ -287,7 +366,7 @@ export const createEcdsaNetworkNode = (
     peers: [],
     status,
     ports: {
-      p2p: BASE_PORTS['keep-ecdsa'].p2p + id,
+      p2p: NODE_BASE_PORTS['keep-ecdsa'].p2p + id,
     },
     docker,
   };
@@ -298,6 +377,58 @@ export const createEcdsaNetworkNode = (
     node.peers.push(getKeepNodePeer(prev));
     prev.peers.push(getKeepNodePeer(node));
   }
+
+  return node;
+};
+
+export const createTbtcNetworkApp = (
+  network: Network,
+  version: string,
+  docker: CommonApp['docker'],
+  status = Status.Stopped,
+): TbtcApp => {
+  const { tbtc } = network.apps;
+  const id = 0;
+
+  const name = `tbtc-dapp-${id + 1}`;
+  const node: TbtcApp = {
+    id,
+    networkId: network.id,
+    name: name,
+    app: 'tbtc-dapp',
+    version,
+    status,
+    ports: {
+      http: APP_BASE_PORTS['tbtc-dapp'].http + id,
+    },
+    docker,
+  };
+
+  return node;
+};
+
+export const createKeepNetworkApp = (
+  network: Network,
+  version: string,
+  docker: CommonApp['docker'],
+  status = Status.Stopped,
+): KeepApp => {
+  const { keep } = network.apps;
+  const id = 0;
+
+  const name = `keep-dashboard-${id + 1}`;
+  const node: KeepApp = {
+    id,
+    networkId: network.id,
+    name: name,
+    app: 'keep-dashboard',
+    version,
+    status,
+    ports: {
+      http: APP_BASE_PORTS['keep-dashboard'].http + id,
+    },
+    docker,
+  };
 
   return node;
 };
@@ -333,18 +464,25 @@ export const getMissingImages = (
   pulled: string[],
 ): string[] => {
   const { bitcoin, ethereum, electrum, beacon, ecdsa } = network.nodes;
+  const { tbtc, keep } = network.apps;
   const requiredImages = [
     ...bitcoin,
     ...ethereum,
     ...electrum,
     ...beacon,
     ...ecdsa,
+    tbtc,
+    keep,
   ].map((n) => {
     // Use the custom image name if specified
     if (n.docker.image) return n.docker.image;
-    // Convert implementation to image name
-    const impl = n.implementation.toLocaleLowerCase().replace(/-/g, '');
-    return `${DOCKER_REPO}/${impl}:${n.version}`;
+    // Convert implementation to image name if node
+    if (n['implementation']) {
+      const impl = n['implementation'].toLocaleLowerCase().replace(/-/g, '');
+      return `${DOCKER_REPO}/${impl}:${n.version}`;
+    }
+    const app = n['app'].toLocaleLowerCase().replace(/-/g, '');
+    return `${DOCKER_REPO}/${app}:${n.version}`;
   });
   // Exclude images already pulled
   const missing = requiredImages.filter((i) => !pulled.includes(i));
@@ -537,6 +675,24 @@ export const getOpenPorts = async (
       openPorts.forEach((port, index) => {
         ports[ecdsa[index].name] = { p2p: port };
       });
+    }
+  }
+
+  const tbtcDapp = network.apps.tbtc;
+  if (tbtcDapp.status !== Status.Started) {
+    const existingPort = tbtcDapp.ports.http;
+    const [openPort] = await getOpenPortRange([existingPort]);
+    if (openPort !== existingPort) {
+      ports[tbtcDapp.name] = { http: openPort };
+    }
+  }
+
+  const keepDashboard = network.apps.keep;
+  if (keepDashboard.status !== Status.Started) {
+    const existingPort = keepDashboard.ports.http;
+    const [openPort] = await getOpenPortRange([existingPort]);
+    if (openPort !== existingPort) {
+      ports[keepDashboard.name] = { http: openPort };
     }
   }
 

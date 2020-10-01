@@ -11,6 +11,21 @@
     </template>
     <div slot="extra" class="page/network-view__extra">
       <a-button
+        @click="openTbtcDapp"
+        class="page/network-view__extra__app-button"
+        size="small"
+        type="link"
+      >
+        Mint or Redeem tBTC
+      </a-button>
+      <a-button
+        @click="openKeepDashboard"
+        class="page/network-view__extra__app-button"
+        size="small"
+        type="link"
+        >View KEEP Dashboard</a-button
+      >
+      <a-button
         :type="button.type"
         :icon="button.icon"
         :ghost="started"

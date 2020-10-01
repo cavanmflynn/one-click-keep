@@ -4,12 +4,15 @@ import {
   BeaconNode,
   EcdsaNode,
   ElectrumNode,
+  TbtcApp,
+  KeepApp,
 } from '@/types';
 import {
   BITCOIN_CREDENTIALS,
-  DOCKER_CONFIGS,
+  NODE_DOCKER_CONFIGS,
   KEEP_BEACON_CREDENTIALS,
   KEEP_ECDSA_CREDENTIALS,
+  APP_DOCKER_CONFIGS,
 } from '../constants';
 import { getContainerName } from './docker-utils';
 import {
@@ -18,6 +21,8 @@ import {
   keepBeacon,
   keepEcdsa,
   electrumx,
+  tbtcDapp,
+  keepDashboard,
 } from './node-templates';
 
 export interface ComposeService {
@@ -60,9 +65,11 @@ export class ComposeFile {
     };
     // Use the node's custom image or the default for the implementation
     const image =
-      node.docker.image || `${DOCKER_CONFIGS.bitcoind.imageName}:${version}`;
+      node.docker.image ||
+      `${NODE_DOCKER_CONFIGS.bitcoind.imageName}:${version}`;
     // Use the node's custom command or the default for the implementation
-    const nodeCommand = node.docker.command || DOCKER_CONFIGS.bitcoind.command;
+    const nodeCommand =
+      node.docker.command || NODE_DOCKER_CONFIGS.bitcoind.command;
     // Replace the variables in the command
     const command = this.mergeCommand(nodeCommand, variables);
     // Add the docker service
@@ -83,7 +90,8 @@ export class ComposeFile {
     const container = getContainerName(node);
     // Use the node's custom image or the default for the implementation
     const image =
-      node.docker.image || `${DOCKER_CONFIGS.ganache.imageName}:${version}`;
+      node.docker.image ||
+      `${NODE_DOCKER_CONFIGS.ganache.imageName}:${version}`;
     // Add the docker service
     this.content.services[name] = ganache(name, container, image, rpc);
   }
@@ -94,7 +102,8 @@ export class ComposeFile {
     const container = getContainerName(node);
     // Use the node's custom image or the default for the implementation
     const image =
-      node.docker.image || `${DOCKER_CONFIGS.electrumx.imageName}:${version}`;
+      node.docker.image ||
+      `${NODE_DOCKER_CONFIGS.electrumx.imageName}:${version}`;
     // Add the docker service
     this.content.services[name] = electrumx(
       name,
@@ -120,10 +129,10 @@ export class ComposeFile {
     // Use the node's custom image or the default for the implementation
     const image =
       node.docker.image ||
-      `${DOCKER_CONFIGS['keep-beacon'].imageName}:${version}`;
+      `${NODE_DOCKER_CONFIGS['keep-beacon'].imageName}:${version}`;
     // Use the node's custom command or the default for the implementation
     const nodeCommand =
-      node.docker.command || DOCKER_CONFIGS['keep-beacon'].command;
+      node.docker.command || NODE_DOCKER_CONFIGS['keep-beacon'].command;
     // Replace the variables in the command
     const command = this.mergeCommand(nodeCommand, variables);
     // Add the docker service
@@ -147,10 +156,10 @@ export class ComposeFile {
     // Use the node's custom image or the default for the implementation
     const image =
       node.docker.image ||
-      `${DOCKER_CONFIGS['keep-ecdsa'].imageName}:${version}`;
+      `${NODE_DOCKER_CONFIGS['keep-ecdsa'].imageName}:${version}`;
     // Use the node's custom command or the default for the implementation
     const nodeCommand =
-      node.docker.command || DOCKER_CONFIGS['keep-ecdsa'].command;
+      node.docker.command || NODE_DOCKER_CONFIGS['keep-ecdsa'].command;
     // Replace the variables in the command
     const command = this.mergeCommand(nodeCommand, variables);
     // Add the docker service
@@ -161,6 +170,30 @@ export class ComposeFile {
       p2p,
       command,
     );
+  }
+
+  addTbtcDapp(app: TbtcApp) {
+    const { name, version, ports } = app;
+    const { http } = ports;
+    const container = getContainerName(app);
+    // Use the node's custom image or the default for the implementation
+    const image =
+      app.docker.image ||
+      `${APP_DOCKER_CONFIGS['tbtc-dapp'].imageName}:${version}`;
+    // Add the docker service
+    this.content.services[name] = tbtcDapp(name, container, image, http);
+  }
+
+  addKeepDashboard(app: KeepApp) {
+    const { name, version, ports } = app;
+    const { http } = ports;
+    const container = getContainerName(app);
+    // Use the node's custom image or the default for the implementation
+    const image =
+      app.docker.image ||
+      `${APP_DOCKER_CONFIGS['keep-dashboard'].imageName}:${version}`;
+    // Add the docker service
+    this.content.services[name] = keepDashboard(name, container, image, http);
   }
 
   private mergeCommand(command: string, variables: Record<string, string>) {

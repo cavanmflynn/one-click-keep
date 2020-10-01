@@ -14,6 +14,16 @@
     &__options-button {
       margin-left: 8px;
     }
+
+    &__app-button {
+      margin-right: 24px;
+      color: $gray;
+      padding: 0;
+
+      &:hover {
+        color: $white;
+      }
+    }
   }
 
   &__nodes {

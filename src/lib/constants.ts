@@ -1,4 +1,9 @@
-import { DockerConfig, NodeImplementation, DockerRepoState } from '@/types';
+import {
+  DockerConfig,
+  NodeImplementation,
+  DockerRepoState,
+  AppName,
+} from '@/types';
 import packageJson from '../../package.json';
 
 // App
@@ -6,7 +11,7 @@ export const APP_VERSION = packageJson.version;
 
 // Docker
 export const DOCKER_REPO = 'oneclickkeep';
-export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
+export const NODE_DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
   bitcoind: {
     name: 'Bitcoin Core',
     imageName: 'oneclickkeep/bitcoind',
@@ -75,6 +80,24 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
     variables: [],
   },
 };
+export const APP_DOCKER_CONFIGS: Record<AppName, DockerConfig> = {
+  'tbtc-dapp': {
+    name: 'tBTC dApp',
+    imageName: 'oneclickkeep/tbtc-dapp',
+    platforms: ['mac', 'linux', 'windows'],
+    volumeDirName: '',
+    command: '',
+    variables: [],
+  },
+  'keep-dashboard': {
+    name: 'KEEP Dashboard',
+    imageName: 'oneclickkeep/keep-dashboard',
+    platforms: ['mac', 'linux', 'windows'],
+    volumeDirName: '',
+    command: '',
+    variables: [],
+  },
+};
 
 /**
  * This defines the hard-coded list of docker images available in the Polar app. When new images
@@ -82,7 +105,7 @@ export const DOCKER_CONFIGS: Record<NodeImplementation, DockerConfig> = {
  */
 export const DEFAULT_REPO_STATE: DockerRepoState = {
   version: 1,
-  images: {
+  nodeImages: {
     bitcoind: {
       latest: '0.20.1',
       versions: ['0.20.1'],
@@ -108,6 +131,16 @@ export const DEFAULT_REPO_STATE: DockerRepoState = {
       versions: ['1.2.0'],
     },
   },
+  appImages: {
+    'tbtc-dapp': {
+      latest: '0.17.3',
+      versions: ['0.17.3'],
+    },
+    'keep-dashboard': {
+      latest: '1.3.3',
+      versions: ['1.3.3'],
+    },
+  },
 };
 
 /**
@@ -115,7 +148,10 @@ export const DEFAULT_REPO_STATE: DockerRepoState = {
  * be sufficiently spaced apart to allow a dozen or so numbers higher and
  * not cause conflicts
  */
-export const BASE_PORTS: Record<NodeImplementation, Record<string, number>> = {
+export const NODE_BASE_PORTS: Record<
+  NodeImplementation,
+  Record<string, number>
+> = {
   bitcoind: {
     rest: 18443,
     p2p: 19444,
@@ -138,6 +174,20 @@ export const BASE_PORTS: Record<NodeImplementation, Record<string, number>> = {
   },
   'keep-ecdsa': {
     p2p: 3919,
+  },
+};
+
+/**
+ * The starting port numbers for the different apps. These should
+ * be sufficiently spaced apart to allow a dozen or so numbers higher and
+ * not cause conflicts
+ */
+export const APP_BASE_PORTS: Record<AppName, Record<string, number>> = {
+  'tbtc-dapp': {
+    http: 8090,
+  },
+  'keep-dashboard': {
+    http: 8091,
   },
 };
 
@@ -183,6 +233,8 @@ export const KEEP_ECDSA_PEER_IDS = [
 ];
 
 // Ethereum
+// prettier-ignore
+export const ETHEREUM_MNEMONIC = 'concert load couple harbor equip island argue ramp clarify fence smart topic';
 export const ETHEREUM_ACCOUNTS = [
   '0x5409ed021d9299bf6814279a6a1411a7e866a631',
   '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb',
