@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <img width="800px" src="https://user-images.githubusercontent.com/20102664/94516832-f2f0bf80-01e3-11eb-9f9c-0db037a9b505.png">
+  <img width="800px" src="https://user-images.githubusercontent.com/20102664/95001610-be388b80-0588-11eb-95af-a130d96586a5.gif">
 </p>
 
 ## Purpose
